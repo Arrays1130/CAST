@@ -19,8 +19,8 @@ if [ -n "$DATABASE_URL" ]; then
     export DB_URL="$DATABASE_URL"
     export DB_CONNECTION=pgsql
     export DB_SSLMODE="${DB_SSLMODE:-require}"
-    export SESSION_DRIVER="${SESSION_DRIVER:-database}"
-    export CACHE_STORE="${CACHE_STORE:-database}"
+    export SESSION_DRIVER=database
+    export CACHE_STORE=database
 elif [ "$APP_ENV" = "production" ]; then
     echo "DATABASE_URL is required in production. Create a free Neon Postgres database and set DATABASE_URL on Render." >&2
     exit 1

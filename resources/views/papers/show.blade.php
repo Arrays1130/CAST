@@ -49,13 +49,21 @@
                 </div>
                 <div class="prop-row">
                     <div class="text-notion-faint">Files</div>
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                         <span>{{ $paper->sourceLabel() }}</span>
-                        @if($paper->hasLocalFile())
-                            <a href="{{ route('papers.download', $paper) }}" class="text-ember hover:underline">Download</a>
-                        @endif
-                        @if($paper->drive())
-                            <a href="{{ $paper->drive()->openUrl() }}" target="_blank" rel="noopener" class="btn-primary w-full sm:w-auto">Open file in Drive</a>
+                        <div class="flex flex-wrap gap-2">
+                            @if($paper->isPdf())
+                                <a href="{{ route('papers.view', $paper) }}" target="_blank" rel="noopener" class="btn-primary w-full sm:w-auto">View PDF</a>
+                            @endif
+                            @if($paper->hasLocalFile())
+                                <a href="{{ route('papers.download', $paper) }}" class="btn-secondary w-full sm:w-auto">Download</a>
+                            @endif
+                            @if($paper->drive())
+                                <a href="{{ $paper->drive()->openUrl() }}" target="_blank" rel="noopener" class="btn-primary w-full sm:w-auto">Open in Drive</a>
+                            @endif
+                        </div>
+                        @if($paper->hasLocalFile() && ! $paper->isPdf() && ! $paper->drive())
+                            <p class="text-xs text-notion-faint">Word files need Download. For in-app preview, submit a PDF or Google Drive link.</p>
                         @endif
                     </div>
                 </div>
@@ -106,11 +114,33 @@
 
         @if($paper->drive()?->previewUrl())
             <div class="mt-8 overflow-hidden rounded-3xl border border-notion-line shadow-card">
-                <div class="flex items-center justify-between bg-ink px-4 py-2 text-sm text-white">
-                    <span>Google Drive preview</span>
-                    <a href="{{ $paper->drive()->openUrl() }}" target="_blank" rel="noopener" class="rounded-full bg-white/10 px-3 py-1 text-xs font-medium hover:bg-white/20">Open file</a>
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-ink px-4 py-2 text-sm text-white">
+                    <span>Preview</span>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ $paper->drive()->openUrl() }}" target="_blank" rel="noopener" class="rounded-full bg-white/10 px-3 py-1 text-xs font-medium hover:bg-white/20">Open in Drive</a>
+                        @if($paper->hasLocalFile())
+                            <a href="{{ route('papers.download', $paper) }}" class="rounded-full bg-white/10 px-3 py-1 text-xs font-medium hover:bg-white/20">Download</a>
+                        @endif
+                    </div>
                 </div>
                 <iframe title="Google Drive preview" src="{{ $paper->drive()->previewUrl() }}" class="h-64 w-full bg-white sm:h-[480px]"></iframe>
+            </div>
+        @elseif($paper->isPdf())
+            <div class="mt-8 overflow-hidden rounded-3xl border border-notion-line shadow-card">
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-ink px-4 py-2 text-sm text-white">
+                    <span>PDF preview</span>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ route('papers.view', $paper) }}" target="_blank" rel="noopener" class="rounded-full bg-white/10 px-3 py-1 text-xs font-medium hover:bg-white/20">Open full screen</a>
+                        <a href="{{ route('papers.download', $paper) }}" class="rounded-full bg-white/10 px-3 py-1 text-xs font-medium hover:bg-white/20">Download</a>
+                    </div>
+                </div>
+                <iframe title="PDF preview" src="{{ route('papers.view', $paper) }}" class="h-64 w-full bg-white sm:h-[480px]"></iframe>
+            </div>
+        @elseif($paper->hasLocalFile())
+            <div class="surface mt-8 p-5">
+                <h2 class="font-display text-xl">Manuscript</h2>
+                <p class="mt-1 text-sm text-notion-muted">This file type can’t be previewed here. Download it, or ask the student to send a PDF / Drive link next time.</p>
+                <a href="{{ route('papers.download', $paper) }}" class="btn-primary mt-4">Download file</a>
             </div>
         @endif
 

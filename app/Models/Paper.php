@@ -81,6 +81,17 @@ class Paper extends Model
         return filled($this->file_path);
     }
 
+    public function isPdf(): bool
+    {
+        if (! $this->hasLocalFile()) {
+            return false;
+        }
+
+        $name = strtolower((string) ($this->original_filename ?: $this->file_path));
+
+        return str_ends_with($name, '.pdf');
+    }
+
     public function hasDrive(): bool
     {
         return filled($this->drive_url);

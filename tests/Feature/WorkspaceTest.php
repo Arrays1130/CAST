@@ -94,18 +94,89 @@ class WorkspaceTest extends TestCase
         $this->assertNotNull($paper->fresh()->archived_at);
     }
 
-    public function test_updates_inbox_is_visible(): void
+    public function test_teacher_can_view_pdf_inline_and_download(): void
     {
-        $user = User::factory()->create();
-        Notice::create([
-            'user_id' => $user->id,
-            'paper_id' => null,
-            'message' => 'Welcome to CAST.',
+        Storage::fake('papers');
+        Storage::disk('papers')->put('manuscript.pdf', '%PDF-1.4 fake');
+
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->create(['role' => 'student']);
+        $paper = Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Manuscript',
+            'status' => 'submitted',
+            'file_path' => 'manuscript.pdf',
+            'original_filename' => 'manuscript.pdf',
+            'submitted_at' => now(),
         ]);
 
-        $this->actingAs($user)
-            ->get(route('notices.index'))
+        $this->actingAs($teacher)
+            ->get(route('papers.view', $paper))
             ->assertOk()
-            ->assertSee('Welcome to CAST.');
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->actingAs($teacher)
+            ->get(route('papers.download', $paper))
+            ->assertOk();
+
+        $this->actingAs($teacher)
+            ->get(route('papers.show', $paper))
+            ->assertOk()
+            ->assertSee('PDF preview', false)
+            ->assertSee(route('papers.view', $paper), false)
+            ->assertSee('Download', false);
+    }
+
+    public function test_docx_cannot_be_viewed_inline_but_can_download(): void
+    {
+        Storage::fake('papers');
+        Storage::disk('papers')->put('chapter.docx', 'fake-docx');
+
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->create(['role' => 'student']);
+        $paper = Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Word draft',
+            'status' => 'submitted',
+            'file_path' => 'chapter.docx',
+            'original_filename' => 'chapter.docx',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($teacher)
+            ->get(route('papers.view', $paper))
+            ->assertNotFound();
+
+        $this->actingAs($teacher)
+            ->get(route('papers.download', $paper))
+            ->assertOk();
+
+        $this->actingAs($teacher)
+            ->get(route('papers.show', $paper))
+            ->assertOk()
+            ->assertSee('can’t be previewed', false)
+            ->assertDontSee('PDF preview', false);
+    }
+
+    public function test_drive_paper_still_shows_preview(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->create(['role' => 'student']);
+        $paper = Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Drive manuscript',
+            'status' => 'submitted',
+            'file_path' => '',
+            'original_filename' => '',
+            'drive_url' => 'https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz/view?usp=sharing',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($teacher)
+            ->get(route('papers.show', $paper))
+            ->assertOk()
+            ->assertSee('Preview', false)
+            ->assertSee('drive.google.com', false)
+            ->assertSee('Open in Drive', false);
     }
 }

@@ -253,6 +253,20 @@ class PaperController extends Controller
         return Storage::disk('papers')->download($paper->file_path, $paper->original_filename);
     }
 
+    public function viewFile(Paper $paper): StreamedResponse
+    {
+        $this->authorize('download', $paper);
+
+        abort_unless($paper->hasLocalFile() && $paper->isPdf(), 404, 'Only PDF uploads can be previewed here.');
+
+        return Storage::disk('papers')->response(
+            $paper->file_path,
+            $paper->original_filename,
+            ['Content-Type' => 'application/pdf'],
+            'inline'
+        );
+    }
+
     public function downloadVersion(Paper $paper, PaperVersion $version): StreamedResponse
     {
         $this->authorize('download', $paper);

@@ -33,7 +33,9 @@
                 </div>
 
                 @if(app()->isProduction())
-                    <p class="rounded-xl bg-[#fff6ed] px-3 py-2 text-xs text-[#9a3412]">Online: use <span class="font-semibold">Google Drive</span>. Computer uploads on the free host can disappear after the server restarts.</p>
+                    <p class="rounded-xl bg-[#fff6ed] px-3 py-2 text-xs text-[#9a3412]">Online tip: <span class="font-semibold">Google Drive</span> is best for review. PDF uploads can be viewed in CAST; Word files need Download. Computer files on the free host can disappear after restarts.</p>
+                @else
+                    <p class="rounded-xl bg-[#f4f0ff] px-3 py-2 text-xs text-[#5b21b6]">PDF uploads can be <span class="font-semibold">viewed</span> in CAST. Word files are download-only — use Drive for in-app preview.</p>
                 @endif
 
                 <div x-show="source === 'file'">
@@ -45,7 +47,7 @@
                         <input x-ref="input" id="file" name="file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="sr-only" @change="setFile($event.target.files[0])">
                         <span class="grid h-14 w-14 place-items-center rounded-full bg-[#7c3aed] text-2xl text-white shadow-lg">↑</span>
                         <span class="text-base font-medium text-ink" x-text="name ? name : 'Click to upload or drag and drop'"></span>
-                        <span class="text-xs text-notion-faint">PDF, DOC, DOCX (max. 20MB)</span>
+                        <span class="text-xs text-notion-faint">PDF preferred for preview · DOC/DOCX also OK (max. 20MB)</span>
                     </label>
                     <x-input-error :messages="$errors->get('file')" class="mt-2" />
                 </div>

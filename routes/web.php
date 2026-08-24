@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/papers/{paper}', [PaperController::class, 'updateDetails'])->name('papers.update');
     Route::post('/papers/{paper}/archive', [PaperController::class, 'archive'])->name('papers.archive');
     Route::get('/papers/{paper}/download', [PaperController::class, 'download'])->name('papers.download');
+    Route::get('/papers/{paper}/view', [PaperController::class, 'viewFile'])->name('papers.view');
     Route::get('/papers/{paper}/versions/{version}', [PaperController::class, 'downloadVersion'])->name('papers.versions.download');
     Route::put('/papers/{paper}/file', [PaperController::class, 'updateFile'])->middleware('student')->name('papers.file.update');
     Route::put('/papers/{paper}/status', [PaperController::class, 'updateStatus'])->middleware('teacher')->name('papers.status.update');

@@ -14,13 +14,27 @@ elif [ -n "$RENDER_EXTERNAL_URL" ]; then
 fi
 export APP_URL="${APP_URL:-https://localhost}"
 
-# Neon / Render / Railway typically inject DATABASE_URL.
+if [ ! -f .env ]; then
+    cp .env.example .env
+fi
+
+# Neon / Render inject DATABASE_URL. .env.example is MySQL — overwrite those keys.
 if [ -n "$DATABASE_URL" ]; then
     export DB_URL="$DATABASE_URL"
     export DB_CONNECTION=pgsql
+    export DB_PORT=5432
     export DB_SSLMODE="${DB_SSLMODE:-require}"
     export SESSION_DRIVER=database
     export CACHE_STORE=database
+    php -r '
+        $path = ".env";
+        $env = file_exists($path) ? file_get_contents($path) : "";
+        foreach (["DB_CONNECTION", "DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD", "DB_URL", "DB_SSLMODE"] as $key) {
+            $env = preg_replace("/^".$key."=.*$/m", "", $env);
+        }
+        $env = trim($env)."\n\nDB_CONNECTION=pgsql\nDB_PORT=5432\nDB_URL=".getenv("DATABASE_URL")."\nDB_SSLMODE=require\n";
+        file_put_contents($path, $env);
+    '
 elif [ "$APP_ENV" = "production" ]; then
     echo "DATABASE_URL is required in production. Create a free Neon Postgres database and set DATABASE_URL on Render." >&2
     exit 1
@@ -33,10 +47,6 @@ else
     touch "$DB_DATABASE"
 fi
 
-if [ ! -f .env ]; then
-    cp .env.example .env
-fi
-
 if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
@@ -44,6 +54,7 @@ fi
 mkdir -p storage/app/papers storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
 chmod -R ug+rwx storage bootstrap/cache || true
 
+php artisan config:clear
 php artisan migrate --force
 php artisan db:seed --force
 php artisan config:cache

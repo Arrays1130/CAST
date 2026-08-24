@@ -19,5 +19,9 @@ services:
         value: stderr
       - key: QUEUE_CONNECTION
         value: sync
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_PORT
+        value: "5432"
       - key: DATABASE_URL
         sync: false

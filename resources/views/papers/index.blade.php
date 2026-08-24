@@ -45,20 +45,55 @@
         </div>
 
         <div class="mt-8 flex flex-wrap items-center gap-1 rounded-2xl border border-notion-line bg-white/60 p-1 text-sm shadow-card">
-            <button type="button" @click="view = 'table'" class="rounded-xl px-3 py-1.5" :class="view === 'table' ? 'bg-ink text-white' : 'text-notion-muted hover:bg-white'">Table</button>
-            <button type="button" @click="view = 'board'" class="rounded-xl px-3 py-1.5" :class="view === 'board' ? 'bg-ink text-white' : 'text-notion-muted hover:bg-white'">Board</button>
-            <a href="{{ route('papers.index', $archived ? [] : ['archived' => 1]) }}" class="rounded-xl px-3 py-1.5 text-notion-muted hover:bg-white">{{ $archived ? 'Active' : 'Archive' }}</a>
+            <button type="button" @click="view = 'table'" class="min-h-11 rounded-xl px-3 py-1.5" :class="view === 'table' ? 'bg-ink text-white' : 'text-notion-muted hover:bg-white'">List</button>
+            <button type="button" @click="view = 'board'" class="min-h-11 rounded-xl px-3 py-1.5" :class="view === 'board' ? 'bg-ink text-white' : 'text-notion-muted hover:bg-white'">Board</button>
+            <a href="{{ route('papers.index', $archived ? [] : ['archived' => 1]) }}" class="inline-flex min-h-11 items-center rounded-xl px-3 py-1.5 text-notion-muted hover:bg-white">{{ $archived ? 'Active' : 'Archive' }}</a>
             @if(auth()->user()->isTeacher())
-                <a href="{{ route('papers.export', $archived ? ['archived' => 1] : []) }}" class="rounded-xl px-3 py-1.5 text-notion-muted hover:bg-white">Export CSV</a>
+                <a href="{{ route('papers.export', $archived ? ['archived' => 1] : []) }}" class="hidden min-h-11 items-center rounded-xl px-3 py-1.5 text-notion-muted hover:bg-white sm:inline-flex">Export CSV</a>
             @endif
-            <div class="ml-auto p-0.5">
-                <input x-model="q" type="search" placeholder="Filter titles…" class="w-44 rounded-xl border-0 bg-transparent py-1.5 text-sm placeholder:text-notion-faint focus:ring-0">
+            <div class="w-full p-1 sm:ml-auto sm:w-auto">
+                <input x-model="q" type="search" placeholder="Filter…" class="w-full rounded-xl border-0 bg-transparent py-2.5 text-base placeholder:text-notion-faint focus:ring-0 sm:w-44 sm:py-1.5 sm:text-sm">
             </div>
         </div>
 
-        <div x-show="view === 'table'" class="mt-4 overflow-hidden rounded-3xl border border-notion-line bg-white/70 shadow-card">
-            <div class="overflow-x-auto">
-                <table class="w-full min-w-[780px] border-collapse text-sm">
+        <div x-show="view === 'table'" class="mt-4">
+            <div class="space-y-3 md:hidden">
+                @forelse($papers as $paper)
+                    @php($haystack = strtolower($paper->title.' '.$paper->group_name.' '.$paper->student->name.' '.$paper->tags))
+                    <a href="{{ route('papers.show', $paper) }}" x-show="{{ json_encode($haystack) }}.includes(q.toLowerCase())" class="surface block p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="truncate font-medium">{{ $paper->title }}</div>
+                                <div class="mt-1 text-sm text-notion-muted">{{ $paper->group_name ?: $paper->student->name }}</div>
+                            </div>
+                            <x-status-badge :status="$paper->status" />
+                        </div>
+                        <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-notion-muted">
+                            @if($paper->isOverdue())
+                                <span class="font-medium text-ember">Due {{ $paper->due_at?->format('M j') }}</span>
+                            @else
+                                <span>Due {{ $paper->due_at?->format('M j') ?: '—' }}</span>
+                            @endif
+                            <span>Score {{ $paper->score !== null ? $paper->score : '—' }}</span>
+                            @if($paper->drive())
+                                <span class="rounded-full bg-[#e8f0fe] px-2 py-0.5 font-semibold text-[#1967d2]">Drive</span>
+                            @endif
+                        </div>
+                    </a>
+                @empty
+                    <div class="surface px-4 py-14 text-center">
+                        <div class="font-display text-2xl">Empty stage</div>
+                        <p class="mt-2 text-sm text-notion-faint">{{ $archived ? 'Nothing archived yet.' : 'Drop the first manuscript into the studio.' }}</p>
+                        @if(auth()->user()->isStudent() && ! $archived)
+                            <a href="{{ route('papers.create') }}" class="btn-primary mt-5">New paper</a>
+                        @endif
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="hidden overflow-hidden rounded-3xl border border-notion-line bg-white/70 shadow-card md:block">
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[780px] border-collapse text-sm">
                     <thead>
                         <tr class="text-left text-xs uppercase tracking-wide text-notion-faint">
                             <th class="px-4 py-3 font-medium">Name</th>
@@ -124,12 +159,13 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 
-        <div x-show="view === 'board'" x-cloak class="mt-4 flex gap-4 overflow-x-auto pb-4">
+        <div x-show="view === 'board'" x-cloak class="mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 md:snap-none">
             @foreach($columns as $column)
-                <section class="w-[270px] shrink-0 rounded-3xl bg-notion-board/80 p-3">
+                <section class="w-[85vw] shrink-0 snap-center rounded-3xl bg-notion-board/80 p-3 sm:w-[270px]">
                     <div class="mb-3 flex items-center gap-2 px-1 text-sm">
                         <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $column['color'] }}">{{ $column['label'] }}</span>
                         <span class="text-xs text-notion-faint">{{ $column['items']->count() }}</span>

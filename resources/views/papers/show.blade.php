@@ -55,7 +55,7 @@
                             <a href="{{ route('papers.download', $paper) }}" class="text-ember hover:underline">Download</a>
                         @endif
                         @if($paper->drive())
-                            <a href="{{ $paper->drive()->openUrl() }}" target="_blank" rel="noopener" class="btn-primary">Open file in Drive</a>
+                            <a href="{{ $paper->drive()->openUrl() }}" target="_blank" rel="noopener" class="btn-primary w-full sm:w-auto">Open file in Drive</a>
                         @endif
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                         <div class="text-notion-faint">Score</div>
                         <input type="number" min="0" max="100" name="score" value="{{ old('score', $paper->score) }}" class="field !mt-0 w-24 border-0 bg-transparent px-0 shadow-none focus:ring-0" placeholder="0–100">
                     </div>
-                    <div class="grid grid-cols-[140px_1fr] items-start gap-3 px-1 py-2.5 sm:grid-cols-[160px_1fr]">
+                    <div class="prop-row">
                         <div class="pt-2 text-notion-faint">Remarks</div>
                         <textarea name="remarks" rows="2" class="field !mt-0 border-0 bg-transparent px-0 shadow-none focus:ring-0" placeholder="Adviser notes">{{ old('remarks', $paper->remarks) }}</textarea>
                     </div>
@@ -78,7 +78,7 @@
                         <div class="font-display text-xl">{{ $paper->score }} <span class="text-sm text-notion-faint">/ 100</span></div>
                     </div>
                     @if($paper->remarks)
-                        <div class="grid grid-cols-[140px_1fr] items-start gap-3 px-1 py-2.5 sm:grid-cols-[160px_1fr]">
+                        <div class="prop-row">
                             <div class="text-notion-faint">Remarks</div>
                             <div class="whitespace-pre-wrap">{{ $paper->remarks }}</div>
                         </div>
@@ -96,7 +96,7 @@
                     @csrf
                     @method('PUT')
                     @foreach($statuses as $status)
-                        <button name="status" value="{{ $status->value }}" class="rounded-full px-3 py-1 text-xs transition {{ $paper->status === $status ? $status->badge().' ring-2 ring-ink/10' : 'bg-white/70 text-notion-muted hover:bg-white' }}">
+                        <button name="status" value="{{ $status->value }}" class="min-h-11 rounded-full px-3 py-2 text-xs transition {{ $paper->status === $status ? $status->badge().' ring-2 ring-ink/10' : 'bg-white/70 text-notion-muted hover:bg-white' }}">
                             {{ $status->label() }}
                         </button>
                     @endforeach
@@ -110,7 +110,7 @@
                     <span>Google Drive preview</span>
                     <a href="{{ $paper->drive()->openUrl() }}" target="_blank" rel="noopener" class="rounded-full bg-white/10 px-3 py-1 text-xs font-medium hover:bg-white/20">Open file</a>
                 </div>
-                <iframe title="Google Drive preview" src="{{ $paper->drive()->previewUrl() }}" class="h-[480px] w-full bg-white"></iframe>
+                <iframe title="Google Drive preview" src="{{ $paper->drive()->previewUrl() }}" class="h-64 w-full bg-white sm:h-[480px]"></iframe>
             </div>
         @endif
 
@@ -138,7 +138,7 @@
                 <h2 class="text-sm font-semibold uppercase tracking-wide text-notion-faint">Version history</h2>
                 <ul class="surface mt-3 divide-y divide-notion-line px-4 text-sm">
                     @foreach($paper->versions as $version)
-                        <li class="flex items-center justify-between py-3">
+                        <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between">
                             <span>{{ $version->original_filename ?: 'Previous version' }} · {{ $version->created_at->diffForHumans() }}</span>
                             @if(filled($version->file_path))
                                 <a class="text-ember" href="{{ route('papers.versions.download', [$paper, $version]) }}">Download</a>

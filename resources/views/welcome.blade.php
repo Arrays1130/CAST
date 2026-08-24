@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>CAST · Capstone Assessment Studio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@
     </header>
     <main class="relative mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
         <p class="mb-4 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/55">Capstone Assessment Studio</p>
-        <h1 class="font-display text-5xl leading-[1.05] tracking-tight sm:text-7xl">Defense-ready papers, without the Notion chaos.</h1>
+        <h1 class="font-display text-[2rem] leading-[1.1] tracking-tight sm:text-7xl">Defense-ready papers, without the Notion chaos.</h1>
         <p class="mx-auto mt-6 max-w-xl text-lg text-white/60">Students drop a manuscript. Advisers review, comment, score, and clear it for defense — all in one dark studio.</p>
         <div class="mt-10 flex flex-wrap justify-center gap-3">
             <a href="{{ route('register') }}" class="btn-primary !bg-ember shadow-glow">Start as a student</a>

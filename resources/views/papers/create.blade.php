@@ -1,20 +1,20 @@
 <x-app-layout>
     <div
-        class="fixed inset-0 z-30 flex items-center justify-center bg-ink/55 p-4 backdrop-blur-[2px]"
+        class="fixed inset-0 z-40 flex items-end justify-center bg-ink/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
         x-data="uploadModal({
             source: '{{ old('drive_url') ? 'drive' : (app()->isProduction() ? 'drive' : 'file') }}',
             title: {{ \Illuminate\Support\Js::from(old('title', '')) }},
             driveUrl: {{ \Illuminate\Support\Js::from(old('drive_url', '')) }},
         })"
     >
-        <form method="POST" action="{{ route('papers.store') }}" enctype="multipart/form-data" class="w-full max-w-[520px] overflow-hidden rounded-2xl bg-white shadow-notion" @submit="busy = true">
+        <form method="POST" action="{{ route('papers.store') }}" enctype="multipart/form-data" class="flex max-h-[100dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-t-3xl bg-white shadow-notion sm:max-h-[90vh] sm:rounded-2xl" @submit="busy = true">
             @csrf
             <div class="flex items-center justify-between border-b border-notion-line px-5 py-4">
                 <h1 class="text-lg font-semibold">Upload Document</h1>
                 <a href="{{ route('papers.index') }}" class="grid h-8 w-8 place-items-center rounded-lg text-lg text-notion-faint hover:bg-notion-hover" aria-label="Close">×</a>
             </div>
 
-            <div class="space-y-4 px-5 py-5">
+            <div class="space-y-4 overflow-y-auto px-5 py-5">
                 <div>
                     <label class="text-[11px] font-semibold uppercase tracking-wide text-notion-faint">Document type (optional)</label>
                     <select name="doc_type" class="field">
@@ -76,7 +76,7 @@
                 </details>
             </div>
 
-            <div class="flex items-center justify-end gap-2 border-t border-notion-line bg-[#fafafa] px-5 py-3">
+            <div class="flex items-center justify-end gap-2 border-t border-notion-line bg-[#fafafa] px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <a href="{{ route('papers.index') }}" class="rounded-lg border border-notion-line bg-white px-4 py-2 text-sm font-medium">Cancel</a>
                 <button type="submit" class="rounded-lg bg-[#7c3aed] px-4 py-2 text-sm font-semibold text-white hover:bg-[#6d28d9]" x-bind:disabled="busy">
                     <span x-show="!busy">Upload</span>

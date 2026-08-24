@@ -2,7 +2,9 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="theme-color" content="#12141a">
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ isset($title) ? $title.' · ' : '' }}CAST</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -82,10 +84,10 @@
             </aside>
 
             <main class="min-h-screen">
-                <div class="sticky top-0 z-20 flex items-center justify-between border-b border-notion-line/80 bg-paper/80 px-4 py-3 backdrop-blur lg:hidden">
-                    <button type="button" @click="nav = true" class="rounded-xl border border-notion-line bg-white px-3 py-1.5 text-sm">Menu</button>
+                <div class="sticky top-0 z-20 flex items-center justify-between border-b border-notion-line/80 bg-paper/80 px-4 py-3 backdrop-blur pt-[max(0.75rem,env(safe-area-inset-top))] lg:hidden">
+                    <button type="button" @click="nav = true" class="min-h-11 rounded-xl border border-notion-line bg-white px-4 text-sm font-medium">Menu</button>
                     <div class="flex items-center gap-2 text-sm font-semibold"><span class="cast-mark !h-6 !w-6 !text-[11px]">C</span> CAST</div>
-                    <button type="button" @click="open = true" class="rounded-xl border border-notion-line bg-white px-3 py-1.5 text-sm">Search</button>
+                    <button type="button" @click="open = true" class="min-h-11 rounded-xl border border-notion-line bg-white px-4 text-sm font-medium">Search</button>
                 </div>
 
                 @if(session('status') && ! request()->routeIs('profile.*'))
@@ -97,14 +99,14 @@
             </main>
 
             <div x-show="open" x-cloak x-transition.opacity class="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm" @click.self="open = false">
-                <div class="mx-auto mt-[14vh] w-full max-w-xl overflow-hidden rounded-3xl border border-white/10 bg-[#1a1d26] shadow-notion" @click.stop x-trap.noscroll="open">
+                <div class="mx-3 mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#1a1d26] shadow-notion sm:mx-auto sm:mt-[14vh] sm:w-full sm:max-w-xl" @click.stop x-trap.noscroll="open">
                     <div class="flex items-center gap-2 border-b border-white/10 px-4">
                         <input x-model="q" x-ref="search" @keydown.enter.prevent="results[0] && go(results[0].href)" type="search" placeholder="Jump to a page…" class="w-full border-0 bg-transparent py-4 text-sm text-white placeholder:text-white/35 focus:ring-0">
                         <span class="k-chip">esc</span>
                     </div>
                     <div class="max-h-72 overflow-y-auto p-2">
                         <template x-for="item in results" :key="item.href">
-                            <button type="button" @click="go(item.href)" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-white/80 hover:bg-white/10">
+                    <button type="button" @click="go(item.href)" class="flex min-h-12 w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm text-white/80 hover:bg-white/10">
                                 <span x-text="item.label"></span>
                                 <span class="text-xs text-white/35" x-text="item.hint"></span>
                             </button>

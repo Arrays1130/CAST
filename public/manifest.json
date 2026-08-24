@@ -1,0 +1,15 @@
+{
+    "name": "CAST Studio",
+    "short_name": "CAST",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f6f1e8",
+    "theme_color": "#12141a",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "48x48",
+            "type": "image/x-icon"
+        }
+    ]
+}

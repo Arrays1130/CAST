@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ $title ?? 'CAST' }}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +25,7 @@
                 </div>
                 <p class="relative text-xs text-white/35">Adviser workspace · student submissions · version history</p>
             </div>
-            <div class="flex items-center justify-center bg-paper px-6 py-12">
+            <div class="flex items-center justify-center bg-paper px-5 py-10 sm:px-6 sm:py-12">
                 <div class="w-full max-w-sm">
                     <a href="{{ url('/') }}" class="mb-8 flex items-center gap-2 text-sm font-semibold lg:hidden">
                         <span class="cast-mark">C</span>

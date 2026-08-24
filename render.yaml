@@ -3,14 +3,18 @@ services:
     name: cast
     runtime: docker
     plan: free
+    repo: https://github.com/Arrays1130/CAST.git
+    branch: main
     healthCheckPath: /up
     envVars:
+      - key: APP_NAME
+        value: CAST
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: "false"
-      - key: APP_NAME
-        value: CAST
+      - key: APP_KEY
+        value: base64:nuq3wNudqLKPCQgefdQj2S9MRbIXs/47ctC8z/fH5Sk=
       - key: LOG_CHANNEL
         value: stderr
       - key: SESSION_DRIVER

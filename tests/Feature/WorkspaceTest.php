@@ -179,4 +179,117 @@ class WorkspaceTest extends TestCase
             ->assertSee('drive.google.com', false)
             ->assertSee('Open in Drive', false);
     }
+
+    public function test_teacher_can_filter_queue_and_sees_comment_counts(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->create(['role' => 'student']);
+
+        $review = Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Needs eyes',
+            'status' => 'for_review',
+            'file_path' => 'a.pdf',
+            'original_filename' => 'a.pdf',
+            'submitted_at' => now()->subDay(),
+            'due_at' => now()->subDays(2),
+        ]);
+        $review->comments()->create([
+            'user_id' => $student->id,
+            'body' => 'Ready for check',
+        ]);
+
+        Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Already approved',
+            'status' => 'approved',
+            'file_path' => 'b.pdf',
+            'original_filename' => 'b.pdf',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($teacher)
+            ->get(route('papers.index', ['filter' => 'for_review']))
+            ->assertOk()
+            ->assertSee('Needs eyes')
+            ->assertDontSee('Already approved');
+
+        $this->actingAs($teacher)
+            ->get(route('papers.index', ['filter' => 'overdue']))
+            ->assertOk()
+            ->assertSee('Needs eyes');
+    }
+
+    public function test_teacher_can_update_status_with_optional_comment(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->create(['role' => 'student']);
+        $paper = Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Draft',
+            'status' => 'submitted',
+            'file_path' => 'draft.pdf',
+            'original_filename' => 'draft.pdf',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($teacher)
+            ->put(route('papers.status.update', $paper), [
+                'status' => 'needs_revision',
+                'comment' => 'Please fix methodology.',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('papers', [
+            'id' => $paper->id,
+            'status' => 'needs_revision',
+        ]);
+        $this->assertDatabaseHas('comments', [
+            'paper_id' => $paper->id,
+            'body' => 'Please fix methodology.',
+        ]);
+
+        $this->actingAs($teacher)
+            ->get(route('papers.show', $paper))
+            ->assertOk()
+            ->assertSee('Review', false)
+            ->assertSee('Save score &amp; details', false);
+    }
+
+    public function test_updates_unread_filter_and_mark_read_can_stay(): void
+    {
+        $user = User::factory()->create();
+        $paper = Paper::create([
+            'user_id' => $user->id,
+            'title' => 'Chapter work',
+            'status' => 'submitted',
+            'file_path' => '',
+            'original_filename' => '',
+            'submitted_at' => now(),
+        ]);
+        $notice = Notice::create([
+            'user_id' => $user->id,
+            'paper_id' => $paper->id,
+            'message' => 'Status of “Chapter work” is now For review.',
+        ]);
+        Notice::create([
+            'user_id' => $user->id,
+            'paper_id' => $paper->id,
+            'message' => 'Old note that should hide',
+            'read_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('notices.index', ['unread' => 1]))
+            ->assertOk()
+            ->assertSee('Chapter work')
+            ->assertSee('Status')
+            ->assertDontSee('Old note that should hide');
+
+        $this->actingAs($user)
+            ->post(route('notices.read', $notice), ['stay' => 1])
+            ->assertRedirect();
+
+        $this->assertNotNull($notice->fresh()->read_at);
+    }
 }

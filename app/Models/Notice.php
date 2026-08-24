@@ -30,4 +30,23 @@ class Notice extends Model
     {
         return $this->belongsTo(Paper::class);
     }
+
+    public function kindLabel(): string
+    {
+        $message = strtolower($this->message);
+
+        if (str_contains($message, 'resubmitted') || str_contains($message, 'submitted')) {
+            return 'Submission';
+        }
+
+        if (str_contains($message, 'commented')) {
+            return 'Comment';
+        }
+
+        if (str_contains($message, 'status')) {
+            return 'Status';
+        }
+
+        return 'Update';
+    }
 }

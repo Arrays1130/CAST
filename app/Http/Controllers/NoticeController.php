@@ -11,9 +11,16 @@ class NoticeController extends Controller
 {
     public function index(Request $request): View
     {
-        $notices = $request->user()->notices()->with('paper')->paginate(30);
+        $unreadOnly = $request->boolean('unread');
 
-        return view('notices.index', compact('notices'));
+        $notices = $request->user()
+            ->notices()
+            ->with('paper')
+            ->when($unreadOnly, fn ($query) => $query->whereNull('read_at'))
+            ->paginate(30)
+            ->withQueryString();
+
+        return view('notices.index', compact('notices', 'unreadOnly'));
     }
 
     public function markRead(Request $request, Notice $notice): RedirectResponse
@@ -21,6 +28,10 @@ class NoticeController extends Controller
         abort_unless($notice->user_id === $request->user()->id, 403);
 
         $notice->update(['read_at' => now()]);
+
+        if ($request->boolean('stay')) {
+            return back()->with('status', 'Marked as read.');
+        }
 
         return $notice->paper_id
             ? redirect()->route('papers.show', $notice->paper_id)

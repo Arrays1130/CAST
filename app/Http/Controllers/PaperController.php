@@ -20,6 +20,12 @@ class PaperController extends Controller
     {
         $user = $request->user();
         $archived = $request->boolean('archived');
+        $filter = $request->string('filter')->toString();
+        $allowedFilters = ['submitted', 'for_review', 'needs_revision', 'approved', 'overdue'];
+
+        if (! in_array($filter, $allowedFilters, true)) {
+            $filter = '';
+        }
 
         $papers = Paper::query()
             ->with('student')
@@ -38,7 +44,23 @@ class PaperController extends Controller
             'overdue' => $papers->filter->isOverdue()->count(),
         ];
 
-        return view('papers.index', compact('papers', 'stats', 'archived'));
+        if ($user->isTeacher()) {
+            $papers = $papers
+                ->sortBy([
+                    fn (Paper $paper) => $paper->isOverdue() ? 0 : 1,
+                    fn (Paper $paper) => -($paper->submitted_at?->getTimestamp() ?? 0),
+                ])
+                ->values();
+        }
+
+        if ($filter === 'overdue') {
+            $papers = $papers->filter->isOverdue()->values();
+        } elseif ($filter !== '') {
+            $status = PaperStatus::from($filter);
+            $papers = $papers->where('status', $status)->values();
+        }
+
+        return view('papers.index', compact('papers', 'stats', 'archived', 'filter'));
     }
 
     public function create(): View
@@ -189,6 +211,7 @@ class PaperController extends Controller
 
         $validated = $request->validate([
             'status' => ['required', 'in:submitted,for_review,needs_revision,approved'],
+            'comment' => ['nullable', 'string', 'max:5000'],
         ]);
 
         $status = PaperStatus::from($validated['status']);
@@ -196,7 +219,18 @@ class PaperController extends Controller
         Workspace::log($paper, $request->user(), 'Set status to '.$status->label().'.');
         Workspace::notify($paper->student, $paper, 'Status of “'.$paper->title.'” is now '.$status->label().'.');
 
-        return back()->with('status', 'Status updated.');
+        if (filled($validated['comment'] ?? null)) {
+            $paper->comments()->create([
+                'user_id' => $request->user()->id,
+                'body' => $validated['comment'],
+            ]);
+            Workspace::log($paper, $request->user(), 'Left a comment.');
+            Workspace::notify($paper->student, $paper, $request->user()->name.' commented on “'.$paper->title.'”.');
+        }
+
+        return back()->with('status', filled($validated['comment'] ?? null)
+            ? 'Status updated and comment sent.'
+            : 'Status updated.');
     }
 
     public function archive(Request $request, Paper $paper): RedirectResponse

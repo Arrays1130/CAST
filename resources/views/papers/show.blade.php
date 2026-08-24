@@ -78,7 +78,10 @@
                     </div>
                     <div class="prop-row">
                         <div class="pt-2 text-notion-faint">Remarks</div>
-                        <textarea name="remarks" rows="2" class="field !mt-0 border-0 bg-transparent px-0 shadow-none focus:ring-0" placeholder="Adviser notes">{{ old('remarks', $paper->remarks) }}</textarea>
+                        <div class="w-full">
+                            <textarea name="remarks" rows="2" class="field !mt-0 border-0 bg-transparent px-0 shadow-none focus:ring-0" placeholder="Final adviser note shown with the score">{{ old('remarks', $paper->remarks) }}</textarea>
+                            <p class="mt-1 text-xs text-notion-faint">Remarks sit with the score. Use Comments below for back-and-forth with the student.</p>
+                        </div>
                     </div>
                 @elseif($paper->score !== null)
                     <div class="prop-row">
@@ -94,20 +97,35 @@
                 @endif
             </div>
             <div class="mt-4 flex justify-end">
-                <x-primary-button>Save properties</x-primary-button>
+                <x-primary-button>{{ auth()->user()->isTeacher() ? 'Save score & details' : 'Save properties' }}</x-primary-button>
             </div>
         </form>
 
         @if(auth()->user()->isTeacher())
-            <div class="mt-4 flex flex-wrap gap-1.5">
-                <form method="POST" action="{{ route('papers.status.update', $paper) }}" class="contents">
+            <div class="surface mt-6 p-5">
+                <h2 class="font-display text-xl">Review</h2>
+                <p class="mt-1 text-sm text-notion-muted">Set status and optionally leave a short note in one step.</p>
+                <form method="POST" action="{{ route('papers.status.update', $paper) }}" class="mt-4 space-y-3" x-data="{ status: '{{ old('status', $paper->status->value) }}' }">
                     @csrf
                     @method('PUT')
-                    @foreach($statuses as $status)
-                        <button name="status" value="{{ $status->value }}" class="min-h-11 rounded-full px-3 py-2 text-xs transition {{ $paper->status === $status ? $status->badge().' ring-2 ring-ink/10' : 'bg-white/70 text-notion-muted hover:bg-white' }}">
-                            {{ $status->label() }}
-                        </button>
-                    @endforeach
+                    <input type="hidden" name="status" :value="status">
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach($statuses as $status)
+                            <button
+                                type="button"
+                                @click="status = '{{ $status->value }}'"
+                                class="min-h-11 rounded-full px-3 py-2 text-xs transition"
+                                :class="status === '{{ $status->value }}' ? '{{ $status->badge() }} ring-2 ring-ink/10' : 'bg-white/70 text-notion-muted hover:bg-white'"
+                            >
+                                {{ $status->label() }}
+                            </button>
+                        @endforeach
+                    </div>
+                    <textarea name="comment" rows="2" class="field" placeholder="Optional note to the student (posted as a comment)">{{ old('comment') }}</textarea>
+                    <x-input-error :messages="$errors->get('comment')" />
+                    <div class="flex justify-end">
+                        <x-primary-button>Update review</x-primary-button>
+                    </div>
                 </form>
             </div>
         @endif
@@ -183,6 +201,7 @@
 
         <div class="surface mt-10 p-5">
             <h2 class="font-display text-2xl">Comments</h2>
+            <p class="mt-1 text-sm text-notion-muted">Thread with the student — separate from score remarks.</p>
             <form method="POST" action="{{ route('papers.comments.store', $paper) }}" class="mt-4">
                 @csrf
                 <textarea name="body" rows="3" required class="field" placeholder="Leave a note for the other side of the table…">{{ old('body') }}</textarea>

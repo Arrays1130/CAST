@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+@layer base {
+    html { scroll-behavior: smooth; }
+    body {
+        @apply bg-paper text-notion-text antialiased;
+        font-family: Outfit, ui-sans-serif, system-ui, sans-serif;
+        background-image:
+            radial-gradient(1200px 500px at 12% -10%, rgba(255, 90, 60, 0.10), transparent 55%),
+            radial-gradient(900px 420px at 100% 0%, rgba(18, 20, 26, 0.06), transparent 50%);
+    }
+    ::selection { background: rgba(255, 90, 60, 0.28); }
+}
+
+@layer components {
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px hover:bg-black;
+    }
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-1.5 rounded-full border border-notion-line bg-white/70 px-4 py-2 text-sm font-medium text-notion-text backdrop-blur transition hover:bg-white;
+    }
+    .surface {
+        @apply rounded-2xl border border-notion-line bg-white/80 shadow-card backdrop-blur;
+    }
+    .field {
+        @apply mt-1 block w-full rounded-xl border-notion-line bg-white/90 text-sm shadow-none transition focus:border-ember focus:ring-ember;
+    }
+    .nav-item {
+        @apply flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] text-white/70 transition hover:bg-white/10 hover:text-white;
+    }
+    .nav-item-active {
+        @apply bg-white/10 font-medium text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)];
+    }
+    .stat-chip {
+        @apply rounded-2xl border border-notion-line bg-white/70 px-3 py-3 shadow-card;
+    }
+    .prop-row {
+        @apply grid grid-cols-[140px_1fr] items-center gap-3 px-1 py-2.5 sm:grid-cols-[160px_1fr];
+    }
+    .k-chip {
+        @apply rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-white/40;
+    }
+}
+
+.n-page-title {
+    font-family: Fraunces, Georgia, serif;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.12;
+}
+
+.cast-mark {
+    display: grid;
+    height: 28px;
+    width: 28px;
+    place-items: center;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #ff7a55, #e24b32 55%, #9b1d32);
+    color: white;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 10px 24px -12px rgba(226, 75, 50, 0.9);
+}
+
+.studio-toast {
+    @apply pointer-events-none fixed right-4 top-4 z-40 rounded-2xl bg-ink px-4 py-3 text-sm text-white shadow-glow;
+}
+
+.paper-row {
+    transition: background 160ms ease, transform 160ms ease;
+}
+.paper-row:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.drop-zone {
+    @apply flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[#93c5fd] bg-[#f8fbff] px-6 py-10 text-center text-sm text-notion-muted transition;
+}
+.drop-zone.is-over {
+    @apply border-ember bg-[#fff3ee] text-ink;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: rgba(22, 20, 28, 0.12);
+}

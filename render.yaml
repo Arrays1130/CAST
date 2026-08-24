@@ -17,9 +17,7 @@ services:
         value: base64:nuq3wNudqLKPCQgefdQj2S9MRbIXs/47ctC8z/fH5Sk=
       - key: LOG_CHANNEL
         value: stderr
-      - key: SESSION_DRIVER
-        value: file
-      - key: CACHE_STORE
-        value: file
       - key: QUEUE_CONNECTION
         value: sync
+      - key: DATABASE_URL
+        sync: false

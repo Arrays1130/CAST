@@ -2,7 +2,7 @@
     <div
         class="fixed inset-0 z-30 flex items-center justify-center bg-ink/55 p-4 backdrop-blur-[2px]"
         x-data="uploadModal({
-            source: '{{ old('drive_url') ? 'drive' : 'file' }}',
+            source: '{{ old('drive_url') ? 'drive' : (app()->isProduction() ? 'drive' : 'file') }}',
             title: {{ \Illuminate\Support\Js::from(old('title', '')) }},
             driveUrl: {{ \Illuminate\Support\Js::from(old('drive_url', '')) }},
         })"
@@ -31,6 +31,10 @@
                     <button type="button" @click="source = 'file'" class="flex-1 rounded-full py-1.5" :class="source === 'file' ? 'bg-white font-medium shadow-sm' : 'text-notion-muted'">Computer</button>
                     <button type="button" @click="openGoogleDrive()" class="flex-1 rounded-full py-1.5" :class="source === 'drive' ? 'bg-white font-medium shadow-sm' : 'text-notion-muted'">Google Drive</button>
                 </div>
+
+                @if(app()->isProduction())
+                    <p class="rounded-xl bg-[#fff6ed] px-3 py-2 text-xs text-[#9a3412]">Online: use <span class="font-semibold">Google Drive</span>. Computer uploads on the free host can disappear after the server restarts.</p>
+                @endif
 
                 <div x-show="source === 'file'">
                     <label class="drop-zone" :class="over ? 'is-over' : ''"

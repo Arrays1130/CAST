@@ -5,8 +5,8 @@ cd /app
 export APP_ENV="${APP_ENV:-production}"
 export APP_DEBUG="${APP_DEBUG:-false}"
 export LOG_CHANNEL="${LOG_CHANNEL:-stderr}"
-export SESSION_DRIVER="${SESSION_DRIVER:-file}"
-export CACHE_STORE="${CACHE_STORE:-file}"
+export QUEUE_CONNECTION="${QUEUE_CONNECTION:-sync}"
+
 if [ -n "$KOYEB_PUBLIC_DOMAIN" ]; then
     export APP_URL="https://${KOYEB_PUBLIC_DOMAIN}"
 elif [ -n "$RENDER_EXTERNAL_URL" ]; then
@@ -14,12 +14,21 @@ elif [ -n "$RENDER_EXTERNAL_URL" ]; then
 fi
 export APP_URL="${APP_URL:-https://localhost}"
 
+# Neon / Render / Railway typically inject DATABASE_URL.
 if [ -n "$DATABASE_URL" ]; then
     export DB_URL="$DATABASE_URL"
-    export DB_CONNECTION="${DB_CONNECTION:-pgsql}"
+    export DB_CONNECTION=pgsql
+    export DB_SSLMODE="${DB_SSLMODE:-require}"
+    export SESSION_DRIVER="${SESSION_DRIVER:-database}"
+    export CACHE_STORE="${CACHE_STORE:-database}"
+elif [ "$APP_ENV" = "production" ]; then
+    echo "DATABASE_URL is required in production. Create a free Neon Postgres database and set DATABASE_URL on Render." >&2
+    exit 1
 else
     export DB_CONNECTION="${DB_CONNECTION:-sqlite}"
     export DB_DATABASE="${DB_DATABASE:-/app/database/database.sqlite}"
+    export SESSION_DRIVER="${SESSION_DRIVER:-file}"
+    export CACHE_STORE="${CACHE_STORE:-file}"
     mkdir -p "$(dirname "$DB_DATABASE")"
     touch "$DB_DATABASE"
 fi

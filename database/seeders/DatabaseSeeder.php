@@ -9,6 +9,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (User::query()->exists()) {
+            return;
+        }
+
         User::query()->firstOrCreate(
             ['email' => 'sir@cast.test'],
             [

@@ -16,6 +16,8 @@
         </div>
     @endif
 
+    <x-input-error :messages="$errors->get('email')" class="mt-4" />
+
     <div class="mt-6 rounded-xl border border-notion-line bg-white px-3 py-3 text-xs leading-relaxed text-notion-muted">
         Tip: look under Primary / Updates. If it landed in Spam once, mark it <span class="font-medium text-ink">Not spam</span> so the next CAST emails stay in Inbox.
     </div>

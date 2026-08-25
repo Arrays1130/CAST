@@ -39,7 +39,8 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME'),
+            // Empty string from Render breaks Symfony ("unsupported scheme"). Prefer null for STARTTLS:587.
+            'scheme' => env('MAIL_SCHEME') ?: null,
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', '127.0.0.1'),
             'port' => env('MAIL_PORT', 2525),

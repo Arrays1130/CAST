@@ -158,7 +158,7 @@ function glowSprite(color, size) {
     return sprite;
 }
 
-function makeHeroPaper(texture) {
+function makeHeroPaper(texture, accent) {
     const geometry = new THREE.BoxGeometry(1.72, 2.42, 0.028);
     const front = new THREE.MeshPhysicalMaterial({
         map: texture,
@@ -179,7 +179,21 @@ function makeHeroPaper(texture) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
 
-    return { group: mesh, frontMaterial: front };
+    const outline = new THREE.LineSegments(
+        new THREE.EdgesGeometry(geometry, 24),
+        new THREE.LineBasicMaterial({
+            color: accent,
+            transparent: true,
+            opacity: 0.5,
+            blending: THREE.AdditiveBlending,
+        }),
+    );
+    outline.scale.setScalar(1.004);
+
+    const group = new THREE.Group();
+    group.add(mesh, outline);
+
+    return { group, frontMaterial: front };
 }
 
 function makeGhostPaper(texture, scale = 0.55) {
@@ -227,7 +241,7 @@ function makeGrid(size, divisions, color) {
 
     return new THREE.LineSegments(
         geometry,
-        new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.35 }),
+        new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.16 }),
     );
 }
 
@@ -267,8 +281,8 @@ export function mountLandingScene(canvas) {
     scene.add(stage);
 
     const textures = SCENE_TEXTURES.map((def) => makePaperTexture(def));
-    const heroes = textures.map((tex) => {
-        const { group, frontMaterial } = makeHeroPaper(tex);
+    const heroes = textures.map((tex, i) => {
+        const { group, frontMaterial } = makeHeroPaper(tex, SCENE_TEXTURES[i].accent);
         group.visible = false;
         stage.add(group);
 
@@ -277,7 +291,7 @@ export function mountLandingScene(canvas) {
     heroes[0].mesh.visible = true;
 
     const ghosts = textures.map((tex, i) => {
-        const ghost = makeGhostPaper(tex, 0.48 + (i % 3) * 0.06);
+        const ghost = makeGhostPaper(tex, 0.42 + (i % 2) * 0.05);
         ghost.visible = false;
         stage.add(ghost);
 
@@ -311,7 +325,7 @@ export function mountLandingScene(canvas) {
     );
     stage.add(badge);
 
-    const rings = [0.58, 0.72, 0.86].map((radius, i) => {
+    const rings = [0.62, 0.82].map((radius, i) => {
         const ring = new THREE.Mesh(
             new THREE.TorusGeometry(radius, 0.014, 12, 96),
             new THREE.MeshPhysicalMaterial({
@@ -321,7 +335,7 @@ export function mountLandingScene(canvas) {
                 roughness: 0.15,
                 metalness: 0.75,
                 transparent: true,
-                opacity: 0.55 - i * 0.12,
+                opacity: 0.45 - i * 0.14,
             }),
         );
         ring.rotation.x = Math.PI / 2.1 + i * 0.08;
@@ -331,9 +345,8 @@ export function mountLandingScene(canvas) {
     });
 
     const glassPanels = [
-        makeGlassPanel(1.4, 0.9, 0x7dd3fc),
-        makeGlassPanel(0.9, 1.6, 0xff5a3c),
-        makeGlassPanel(1.1, 1.1, 0xa78bfa),
+        makeGlassPanel(1.25, 0.72, 0x7dd3fc),
+        makeGlassPanel(0.72, 1.25, 0xff5a3c),
     ];
     glassPanels.forEach((panel) => stage.add(panel));
 
@@ -346,8 +359,8 @@ export function mountLandingScene(canvas) {
             'position',
             new THREE.BufferAttribute(
                 (() => {
-                    const positions = new Float32Array(480 * 3);
-                    for (let i = 0; i < 480; i += 1) {
+                    const positions = new Float32Array(300 * 3);
+                    for (let i = 0; i < 300; i += 1) {
                         positions[i * 3] = (Math.random() - 0.35) * 16;
                         positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
                         positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
@@ -358,7 +371,7 @@ export function mountLandingScene(canvas) {
                 3,
             ),
         ),
-        new THREE.PointsMaterial({ color: 0xffd0c0, size: 0.028, transparent: true, opacity: 0.45, depthWrite: false, blending: THREE.AdditiveBlending }),
+        new THREE.PointsMaterial({ color: 0xffd0c0, size: 0.022, transparent: true, opacity: 0.26, depthWrite: false, blending: THREE.AdditiveBlending }),
     );
     scene.add(dust);
 
@@ -389,7 +402,7 @@ export function mountLandingScene(canvas) {
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.55, 0.42, 0.88);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.36, 0.9);
     composer.addPass(bloom);
 
     const mouse = { x: 0.12, y: 0 };
@@ -486,23 +499,21 @@ export function mountLandingScene(canvas) {
             ghost.visible = active;
             let opacity = 0;
             if (i === indexA) {
-                opacity = (1 - blend) * 0.28;
+                opacity = (1 - blend) * 0.14;
             }
             if (i === indexB) {
-                opacity = blend * 0.28;
+                opacity = blend * 0.14;
             }
             ghost.material.opacity = opacity;
-            const orbit = t * 0.35 + i * 1.4;
+            const orbit = t * 0.22 + i * 1.4;
             ghost.position.set(
-                Math.sin(orbit) * 2.8 - 0.5,
-                0.4 + Math.cos(orbit * 0.7) * 0.5,
-                Math.cos(orbit) * 1.2 - 1.5,
+                Math.sin(orbit) * 3.4 - 0.2,
+                0.45 + Math.cos(orbit * 0.7) * 0.45,
+                Math.cos(orbit) * 1.5 - 2.2,
             );
-            ghost.rotation.set(-0.2, orbit * 0.4, 0.15);
+            ghost.rotation.set(-0.16, orbit * 0.3, 0.1);
         });
 
-        const heroIndex = blend > 0.5 ? indexB : indexA;
-        const hero = heroes[heroIndex].mesh;
         const heroPose = {
             x: lerp(poseA.hero.x, poseB.hero.x, blend),
             y: lerp(poseA.hero.y, poseB.hero.y, blend),
@@ -512,9 +523,24 @@ export function mountLandingScene(canvas) {
         };
         const floatY = Math.sin(t * 0.95) * 0.14;
         const scrollPulse = easeOutExpo(Math.abs(targetFloat - sceneFloat)) * 0.08;
-        hero.position.set(heroPose.x, heroPose.y + floatY, heroPose.z);
-        hero.rotation.set(-0.1, heroPose.rotY + Math.sin(t * 0.45) * 0.1, 0.05);
-        hero.scale.setScalar(heroPose.scale + scrollPulse);
+        heroes.forEach((hero, i) => {
+            if (i !== indexA && i !== indexB) {
+                return;
+            }
+
+            const transitionOffset = i === indexA ? -blend : 1 - blend;
+            hero.mesh.position.set(
+                heroPose.x + transitionOffset * 0.12,
+                heroPose.y + floatY,
+                heroPose.z - Math.abs(transitionOffset) * 0.18,
+            );
+            hero.mesh.rotation.set(
+                -0.1,
+                heroPose.rotY + Math.sin(t * 0.45) * 0.08 + transitionOffset * 0.16,
+                0.04 + transitionOffset * 0.025,
+            );
+            hero.mesh.scale.setScalar(heroPose.scale + scrollPulse - Math.abs(transitionOffset) * 0.035);
+        });
 
         const cam = lerp3(poseA.cam, poseB.cam, blend);
         const look = lerp3(poseA.look, poseB.look, blend);
@@ -545,13 +571,13 @@ export function mountLandingScene(canvas) {
         });
 
         glassPanels.forEach((panel, i) => {
-            const angle = t * 0.25 + i * 2.1;
+            const angle = t * 0.16 + i * Math.PI;
             panel.position.set(
-                heroPose.x + Math.sin(angle) * (1.8 + i * 0.3),
-                heroPose.y + 0.2 + i * 0.35,
-                heroPose.z + Math.cos(angle) * 0.8,
+                heroPose.x + Math.sin(angle) * (2.05 + i * 0.25),
+                heroPose.y + 0.15 + i * 0.55,
+                heroPose.z + Math.cos(angle) * 0.95 - 0.35,
             );
-            panel.rotation.set(-0.4, angle, 0.2);
+            panel.rotation.set(-0.3, angle, 0.12);
             panel.material.color.copy(i % 2 === 0 ? palette.accent : palette.cyan);
         });
 

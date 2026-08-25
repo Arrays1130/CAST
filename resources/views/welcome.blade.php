@@ -17,74 +17,99 @@
     <p class="landing-scene-counter pointer-events-none" aria-hidden="true">01</p>
 
     <header class="landing-nav fixed inset-x-0 top-0 z-30">
-        <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-            <a href="{{ url('/') }}" class="flex items-center gap-2 text-sm font-semibold">
-                <span class="cast-mark">C</span>
-                CAST Studio
+        <div class="landing-nav-shell">
+            <a href="{{ url('/') }}" class="flex items-center gap-3 text-sm font-semibold">
+                <span class="cast-mark landing-brand-mark">C</span>
+                <span>
+                    <span class="block leading-none">CAST</span>
+                    <span class="mt-1 block text-[9px] font-medium uppercase tracking-[0.2em] text-white/35">Assessment studio</span>
+                </span>
             </a>
             <div class="flex items-center gap-2 text-sm">
-                <a href="{{ route('login') }}" class="rounded-full px-3 py-1.5 text-white/70 hover:text-white">Log in</a>
-                <a href="{{ route('register') }}" class="btn-primary !bg-white !text-ink hover:!bg-paper">Get started</a>
+                <a href="{{ route('login') }}" class="landing-nav-link">Log in</a>
+                <a href="{{ route('register') }}" class="landing-nav-cta">Get started <span aria-hidden="true">↗</span></a>
             </div>
         </div>
     </header>
 
-    <nav class="landing-dots fixed right-5 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-2 sm:flex" aria-label="Scroll scenes">
+    <nav class="landing-dots fixed right-5 top-1/2 z-30 hidden -translate-y-1/2 flex-col sm:flex" aria-label="Scroll scenes">
         @foreach(['Studio', 'Submit', 'Review', 'Scan', 'Ship'] as $i => $label)
-            <button type="button" class="landing-dot" data-scroll-to="{{ $i }}" aria-label="{{ $label }}"></button>
+            <button type="button" class="landing-dot" data-scroll-to="{{ $i }}" aria-label="{{ $label }}">
+                <span class="landing-dot-label">{{ $label }}</span>
+                <span class="landing-dot-mark"></span>
+            </button>
         @endforeach
     </nav>
 
     <main id="landing-scroll" class="relative z-10">
         <section class="landing-scene" data-landing-scene="0">
             <div class="landing-scene-copy">
-                <p class="landing-kicker">Capstone Assessment Studio</p>
-                <h1 class="landing-gradient-text font-display text-[2.35rem] leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.2rem]">Defense-ready papers, without the Notion chaos.</h1>
-                <p class="mt-6 max-w-md text-base text-white/65 sm:text-lg">Scroll — each chapter of the capstone journey gets its own studio moment.</p>
-                <div class="mt-9 flex flex-wrap gap-3">
-                    <a href="{{ route('register') }}" class="btn-primary !bg-ember px-5 shadow-glow">Start as a student</a>
-                    <a href="{{ route('login') }}" class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 backdrop-blur hover:bg-white/10">Adviser log in</a>
+                <div class="landing-copy-panel">
+                    <p class="landing-kicker"><span class="landing-live-dot"></span> Capstone Assessment Studio</p>
+                    <h1 class="landing-gradient-text font-display text-[2.6rem] leading-[0.98] tracking-[-0.035em] sm:text-6xl lg:text-[4.6rem]">Turn drafts into defense-ready work.</h1>
+                    <p class="landing-body-copy">Submit, review, and refine every capstone chapter inside one focused workspace.</p>
+                    <div class="mt-9 flex flex-wrap gap-3">
+                        <a href="{{ route('register') }}" class="landing-primary-cta">Start your workspace <span aria-hidden="true">→</span></a>
+                        <a href="{{ route('login') }}" class="landing-secondary-cta">Adviser log in</a>
+                    </div>
+                    <div class="landing-proof-row" aria-label="CAST capabilities">
+                        <span>PDF preview</span><i></i><span>Live feedback</span><i></i><span>Citation scan</span>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section class="landing-scene" data-landing-scene="1">
             <div class="landing-scene-copy">
-                <p class="landing-kicker">01 · Submit</p>
-                <h2 class="landing-gradient-text font-display text-4xl tracking-tight sm:text-5xl">Drop the manuscript.</h2>
-                <p class="mt-4 max-w-md text-white/65">PDF upload or Google Drive link — tagged, dated, and in the queue in seconds.</p>
+                <div class="landing-copy-panel">
+                    <p class="landing-kicker">01 · Submit</p>
+                    <h2 class="landing-gradient-text font-display text-4xl leading-none tracking-tight sm:text-6xl">Drop the manuscript.</h2>
+                    <p class="landing-body-copy">PDF or Google Drive—tagged, dated, and sent to the review queue in seconds.</p>
+                    <div class="landing-feature-card"><span class="landing-feature-icon">↑</span><span><strong>One clean handoff</strong><small>Files, links, versions, and deadlines</small></span></div>
+                </div>
             </div>
         </section>
 
         <section class="landing-scene" data-landing-scene="2">
             <div class="landing-scene-copy">
-                <p class="landing-kicker">02 · Review</p>
-                <h2 class="landing-gradient-text font-display text-4xl tracking-tight sm:text-5xl">Sir opens it live.</h2>
-                <p class="mt-4 max-w-md text-white/65">Preview in-browser, set status, score, and leave feedback — no download-first workflow.</p>
+                <div class="landing-copy-panel">
+                    <p class="landing-kicker">02 · Review</p>
+                    <h2 class="landing-gradient-text font-display text-4xl leading-none tracking-tight sm:text-6xl">Review it live.</h2>
+                    <p class="landing-body-copy">Preview in-browser, set a status, score the work, and leave feedback without downloading first.</p>
+                    <div class="landing-feature-card"><span class="landing-feature-icon">✓</span><span><strong>Feedback in context</strong><small>One paper, one review trail</small></span></div>
+                </div>
             </div>
         </section>
 
         <section class="landing-scene" data-landing-scene="3">
             <div class="landing-scene-copy">
-                <p class="landing-kicker">03 · Reference Detective</p>
-                <h2 class="landing-gradient-text font-display text-4xl tracking-tight sm:text-5xl">Catch missing citations.</h2>
-                <p class="mt-4 max-w-md text-white/65">Flags bibliography entries not used in the body — and citations missing from the list.</p>
+                <div class="landing-copy-panel">
+                    <p class="landing-kicker">03 · Reference Detective</p>
+                    <h2 class="landing-gradient-text font-display text-4xl leading-none tracking-tight sm:text-6xl">Catch citation gaps.</h2>
+                    <p class="landing-body-copy">Spot unused references and in-text citations missing from the bibliography before submission.</p>
+                    <div class="landing-feature-card"><span class="landing-feature-icon">⌕</span><span><strong>Scan before defense</strong><small>Find issues while they are still easy to fix</small></span></div>
+                </div>
             </div>
         </section>
 
         <section class="landing-scene" data-landing-scene="4">
             <div class="landing-scene-copy">
-                <p class="landing-kicker">04 · Ship</p>
-                <h2 class="landing-gradient-text font-display text-4xl tracking-tight sm:text-5xl">Cleared for defense.</h2>
-                <p class="mt-4 max-w-md text-white/65">Versions, archive, CSV export — the whole capstone trail in one studio.</p>
-                <div class="mt-9 flex flex-wrap gap-3">
-                    <a href="{{ route('register') }}" class="btn-primary !bg-ember px-5 shadow-glow">Join CAST</a>
-                    <a href="{{ route('login') }}" class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 backdrop-blur hover:bg-white/10">Adviser log in</a>
+                <div class="landing-copy-panel">
+                    <p class="landing-kicker">04 · Ship</p>
+                    <h2 class="landing-gradient-text font-display text-4xl leading-none tracking-tight sm:text-6xl">Cleared for defense.</h2>
+                    <p class="landing-body-copy">Keep every version, decision, and approval in one complete capstone trail.</p>
+                    <div class="mt-9 flex flex-wrap gap-3">
+                        <a href="{{ route('register') }}" class="landing-primary-cta">Join CAST <span aria-hidden="true">→</span></a>
+                        <a href="{{ route('login') }}" class="landing-secondary-cta">Adviser log in</a>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <p class="landing-scroll-hint fixed bottom-6 left-1/2 z-30 -translate-x-1/2 text-[11px] uppercase tracking-[0.2em] text-white/35">Scroll to explore</p>
+    <div class="landing-scroll-hint fixed bottom-6 left-1/2 z-30 -translate-x-1/2" aria-hidden="true">
+        <span class="landing-scroll-wheel"><i></i></span>
+        <span>Scroll to explore</span>
+    </div>
 </body>
 </html>

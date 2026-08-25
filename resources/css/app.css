@@ -107,6 +107,11 @@ body.landing-3d {
     background-image: none;
     color: #fff;
     overflow-x: hidden;
+    --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+}
+
+body.landing-3d .font-display {
+    font-family: var(--font-display);
 }
 
 body.landing-3d[data-landing-scene='0'] { --landing-accent: #ff5a3c; --landing-glow: rgba(255, 90, 60, 0.45); }
@@ -123,28 +128,66 @@ body.landing-3d[data-landing-scene='4'] { --landing-accent: #34d399; --landing-g
 
 .landing-scene-copy {
     @apply mx-auto w-full max-w-6xl opacity-0;
-    transform: translateY(32px) scale(0.97);
-    filter: blur(6px);
-    transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), filter 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(40px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .landing-scene-copy.is-visible {
     opacity: 1;
     transform: none;
+}
+
+.landing-stagger {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(8px);
+    transition:
+        opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--d, 0) * 90ms);
+}
+
+.landing-scene-copy.is-visible .landing-stagger {
+    opacity: 1;
+    transform: none;
     filter: none;
 }
 
+.landing-hero-grid {
+    @apply grid w-full gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-16;
+}
+
 .landing-copy-panel {
-    width: min(100%, 35rem);
+    width: min(100%, 36rem);
+}
+
+.landing-hero-brand {
+    width: min(100%, 42rem);
+}
+
+.landing-hero-side {
+    width: min(100%, 26rem);
+    justify-self: end;
+}
+
+.landing-brand-word {
+    margin: 0.15rem 0 0.85rem;
+    font-family: var(--font-display);
+    font-size: clamp(4.8rem, 14vw, 9.5rem);
+    font-weight: 800;
+    line-height: 0.86;
+    letter-spacing: -0.06em;
+    color: #fff;
+    text-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
 }
 
 .landing-gradient-text {
-    background: linear-gradient(118deg, #fff 0%, #f4f4f5 48%, var(--landing-accent, #ff5a3c) 118%);
+    background: linear-gradient(115deg, #fff 0%, #f3f4f6 42%, var(--landing-accent, #ff5a3c) 140%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     text-wrap: balance;
-    filter: drop-shadow(0 12px 36px rgba(0, 0, 0, 0.28));
 }
 
 .landing-kicker {
@@ -339,9 +382,10 @@ body.landing-3d[data-landing-scene] .landing-scene-counter {
     inset: 0;
     z-index: 1;
     background:
-        radial-gradient(ellipse 70% 55% at 72% 42%, transparent 0%, rgba(5, 6, 10, 0.52) 100%),
-        linear-gradient(90deg, rgba(5, 6, 10, 0.94) 0%, rgba(5, 6, 10, 0.56) 40%, rgba(5, 6, 10, 0.05) 72%, rgba(5, 6, 10, 0.38) 100%),
-        linear-gradient(180deg, rgba(5, 6, 10, 0.55) 0%, transparent 20%, transparent 75%, rgba(5, 6, 10, 0.82) 100%);
+        radial-gradient(ellipse 58% 48% at 68% 44%, transparent 0%, rgba(5, 6, 10, 0.58) 100%),
+        linear-gradient(90deg, rgba(5, 6, 10, 0.96) 0%, rgba(5, 6, 10, 0.5) 36%, rgba(5, 6, 10, 0.04) 70%, rgba(5, 6, 10, 0.42) 100%),
+        linear-gradient(180deg, rgba(5, 6, 10, 0.5) 0%, transparent 18%, transparent 76%, rgba(5, 6, 10, 0.88) 100%);
+    transition: background 0.8s ease;
 }
 
 .landing-nav {
@@ -405,17 +449,32 @@ body.landing-3d[data-landing-scene] .landing-scene-counter {
 @media (max-width: 767px) {
     .landing-scene {
         align-items: flex-end;
-        padding-bottom: 14vh;
+        padding-bottom: 12vh;
     }
 
-    .landing-copy-panel {
+    .landing-hero-grid {
+        gap: 1.25rem;
+    }
+
+    .landing-hero-side {
+        justify-self: stretch;
+    }
+
+    .landing-copy-panel,
+    .landing-hero-brand,
+    .landing-hero-side {
         width: 100%;
-        padding: 1.25rem;
+        padding: 1.15rem;
         border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 1.5rem;
-        background: rgba(7, 8, 12, 0.55);
+        border-radius: 1.4rem;
+        background: rgba(7, 8, 12, 0.58);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
         backdrop-filter: blur(16px);
+    }
+
+    .landing-brand-word {
+        font-size: clamp(3.6rem, 18vw, 5.2rem);
+        margin-bottom: 0.4rem;
     }
 
     .landing-body-copy {
@@ -443,4 +502,11 @@ body.landing-3d[data-landing-scene] .landing-scene-counter {
     }
     .landing-grain { display: none; }
     .landing-scroll-wheel i { animation: none; }
+    .landing-scene-copy,
+    .landing-stagger {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        transition: none !important;
+    }
 }

@@ -53,7 +53,8 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->withSession(['password_reset_portal' => 'student'])
+            ->post('/forgot-password', ['email' => $user->email, 'portal' => 'student']);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
             $response = $this->post('/reset-password', [
@@ -65,7 +66,7 @@ class PasswordResetTest extends TestCase
 
             $response
                 ->assertSessionHasNoErrors()
-                ->assertRedirect(route('login'));
+                ->assertRedirect(route('login.student'));
 
             return true;
         });

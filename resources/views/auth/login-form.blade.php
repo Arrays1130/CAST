@@ -37,7 +37,7 @@
                 <input type="checkbox" name="remember" class="rounded border-notion-line text-ember focus:ring-ember">
                 Keep me logged in
             </label>
-            <a class="text-sm font-medium text-ember" href="{{ route('password.request') }}">Forgot?</a>
+            <a class="text-sm font-medium text-ember" href="{{ route('password.request', ['portal' => $portal === 'adviser' ? 'adviser' : 'student']) }}">Forgot?</a>
         </div>
 
         <x-primary-button class="w-full">{{ $cta }}</x-primary-button>

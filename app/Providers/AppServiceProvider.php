@@ -20,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
     {
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
+            if ($root = config('app.url')) {
+                URL::forceRootUrl($root);
+            }
         }
 
         Gate::policy(Paper::class, PaperPolicy::class);

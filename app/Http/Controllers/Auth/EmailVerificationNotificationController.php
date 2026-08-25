@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Support\MailGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -19,12 +20,13 @@ class EmailVerificationNotificationController extends Controller
         }
 
         try {
+            MailGuard::assertDeliverable();
             $request->user()->sendEmailVerificationNotification();
         } catch (Throwable $e) {
             report($e);
 
             return back()->withErrors([
-                'email' => 'Could not send verification email. Confirm MAIL_HOST=smtp.gmail.com, MAIL_PORT=587, and your Gmail App Password on Render.',
+                'email' => $e->getMessage() ?: 'Could not send verification email. Check MAIL_* settings on Render.',
             ]);
         }
 

@@ -37,6 +37,8 @@ services:
         value: "true"
       - key: APP_URL
         value: https://cast-5y3n.onrender.com
+      - key: PHP_CLI_SERVER_WORKERS
+        value: "4"
       - key: SEED_DEMO
         value: "false"
       - key: TEACHER_INVITE_CODE

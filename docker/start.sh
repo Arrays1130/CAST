@@ -77,4 +77,7 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-php artisan serve --host=0.0.0.0 --port="${PORT:-8000}"
+# artisan serve is one process unless PHP_CLI_SERVER_WORKERS + --no-reload.
+# Extra workers keep /verify-email up when Gmail SMTP is slow.
+export PHP_CLI_SERVER_WORKERS="${PHP_CLI_SERVER_WORKERS:-4}"
+php artisan serve --host=0.0.0.0 --port="${PORT:-8000}" --no-reload

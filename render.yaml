@@ -53,6 +53,10 @@ services:
         sync: false
       - key: MAIL_FROM_ADDRESS
         sync: false
+      - key: MAIL_FROM_NAME
+        value: CAST Studio
+      - key: RESEND_API_KEY
+        sync: false
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY

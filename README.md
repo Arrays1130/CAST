@@ -19,7 +19,11 @@ Production never seeds these accounts unless you explicitly set `SEED_DEMO=true`
    - `DATABASE_URL` — Neon connection string
    - `TEACHER_INVITE_CODE` — shared secret for adviser signup (optional but recommended)
 3. Recommended:
-   - Mail (password reset / verify email): `MAIL_MAILER`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS` (e.g. Resend SMTP)
+   - Mail (verify email / password reset) via **Resend** (inbox, not spam):
+     - `MAIL_MAILER=resend`
+     - `RESEND_API_KEY` — from [resend.com](https://resend.com) API keys
+     - `MAIL_FROM_ADDRESS` — use `onboarding@resend.dev` for tests, or a domain you verified in Resend
+     - `MAIL_FROM_NAME=CAST Studio`
    - Persistent uploads: Cloudflare R2 / S3 — `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_BUCKET`, `AWS_ENDPOINT`, `AWS_URL`, `AWS_USE_PATH_STYLE_ENDPOINT=true` for R2
 4. Redeploy. Rotate any key or DB password that was ever pasted in chat or committed.
 

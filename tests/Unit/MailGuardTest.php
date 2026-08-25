@@ -24,7 +24,7 @@ class MailGuardTest extends TestCase
         config(['app.env' => 'production', 'mail.default' => 'log']);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('MAIL_MAILER=resend');
+        $this->expectExceptionMessage('GOOGLE_APPS_SCRIPT_URL');
 
         MailGuard::assertDeliverable();
     }
@@ -45,5 +45,20 @@ class MailGuardTest extends TestCase
         $this->expectExceptionMessage('smtp.gmail.com');
 
         MailGuard::assertDeliverable();
+    }
+
+    public function test_allows_google_apps_script_mailer(): void
+    {
+        $this->app['env'] = 'production';
+        config([
+            'app.env' => 'production',
+            'mail.default' => 'google_apps_script',
+            'services.google_apps_script.url' => 'https://script.google.com/macros/s/example/exec',
+            'services.google_apps_script.secret' => 'test-secret',
+        ]);
+
+        MailGuard::assertDeliverable();
+
+        $this->assertTrue(true);
     }
 }

@@ -9,7 +9,7 @@ final class MailFailures
 {
     public static function gmailSmtpBlockedMessage(): string
     {
-        return 'Render cannot reach smtp.gmail.com (port 587 times out). Gmail SMTP will not work on this host. Ask an adviser to open Students → Confirm email. To send real mail, add RESEND_API_KEY on Render and set MAIL_MAILER=resend.';
+        return 'Render cannot reach smtp.gmail.com (port 587 times out). Use the Google Apps Script mail relay (GOOGLE_APPS_SCRIPT_URL) or ask an adviser to open Students → Confirm email.';
     }
 
     public static function friendly(Throwable $e): string

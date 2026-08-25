@@ -21,8 +21,19 @@ final class MailGuard
 
         if (in_array($mailer, ['log', 'array'], true)) {
             throw new RuntimeException(
-                'Mail is set to “'.$mailer.'”. On Render use MAIL_MAILER=resend with RESEND_API_KEY (Gmail SMTP is blocked).'
+                'Mail is set to “'.$mailer.'”. On Render set GOOGLE_APPS_SCRIPT_URL (Gmail SMTP is blocked).'
             );
+        }
+
+        if ($mailer === 'google_apps_script') {
+            if (! filled(config('services.google_apps_script.url'))
+                || ! filled(config('services.google_apps_script.secret'))) {
+                throw new RuntimeException(
+                    'Google Apps Script mail is incomplete. Set GOOGLE_APPS_SCRIPT_URL and GOOGLE_APPS_SCRIPT_SECRET on Render.'
+                );
+            }
+
+            return;
         }
 
         if ($mailer === 'smtp') {

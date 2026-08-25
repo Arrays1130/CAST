@@ -59,6 +59,10 @@ services:
         value: CAST Studio
       - key: RESEND_API_KEY
         sync: false
+      - key: GOOGLE_APPS_SCRIPT_URL
+        sync: false
+      - key: GOOGLE_APPS_SCRIPT_SECRET
+        sync: false
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY

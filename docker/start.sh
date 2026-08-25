@@ -60,8 +60,10 @@ fi
 mkdir -p storage/app/papers storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
 chmod -R ug+rwx storage bootstrap/cache || true
 
-# HTTP API mail is more reliable on Render Free than Gmail SMTP (often delayed/blocked).
-if [ -n "$RESEND_API_KEY" ]; then
+# HTTP mail on Render Free: Google Apps Script first (Gmail SMTP is blocked).
+if [ -n "$GOOGLE_APPS_SCRIPT_URL" ]; then
+    export MAIL_MAILER=google_apps_script
+elif [ -n "$RESEND_API_KEY" ]; then
     export MAIL_MAILER=resend
 fi
 

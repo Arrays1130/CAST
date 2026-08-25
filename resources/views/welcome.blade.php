@@ -14,46 +14,75 @@
     <div class="pointer-events-none landing-vignette"></div>
     <div class="pointer-events-none landing-grain"></div>
 
-    <header class="landing-nav">
-        <a href="{{ url('/') }}" class="flex items-center gap-2 text-sm font-semibold">
-            <span class="cast-mark">C</span>
-            CAST Studio
-        </a>
-        <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('login') }}" class="rounded-full px-3 py-1.5 text-white/70 hover:text-white">Log in</a>
-            <a href="{{ route('register') }}" class="btn-primary !bg-white !text-ink hover:!bg-paper">Get started</a>
+    <header class="landing-nav fixed inset-x-0 top-0 z-30">
+        <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+            <a href="{{ url('/') }}" class="flex items-center gap-2 text-sm font-semibold">
+                <span class="cast-mark">C</span>
+                CAST Studio
+            </a>
+            <div class="flex items-center gap-2 text-sm">
+                <a href="{{ route('login') }}" class="rounded-full px-3 py-1.5 text-white/70 hover:text-white">Log in</a>
+                <a href="{{ route('register') }}" class="btn-primary !bg-white !text-ink hover:!bg-paper">Get started</a>
+            </div>
         </div>
     </header>
 
-    <main class="relative z-10 mx-auto flex min-h-[100dvh] max-w-6xl flex-col justify-end px-6 pb-10 pt-28 sm:justify-center sm:pb-16 lg:pt-16">
-        <div class="landing-copy max-w-xl lg:max-w-[34rem]">
-            <p class="mb-5 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/55 backdrop-blur">Capstone Assessment Studio</p>
-            <h1 class="font-display text-[2.4rem] leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.4rem]">Defense-ready papers, without the Notion chaos.</h1>
-            <p class="mt-6 max-w-md text-base text-white/65 sm:text-lg">Students drop a manuscript. Advisers review, comment, score, and clear it for defense — live, in one dark studio.</p>
-            <div class="mt-9 flex flex-wrap gap-3">
-                <a href="{{ route('register') }}" class="btn-primary !bg-ember px-5 shadow-glow">Start as a student</a>
-                <a href="{{ route('login') }}" class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 backdrop-blur hover:bg-white/10">Adviser log in</a>
-            </div>
-            <p class="mt-6 text-[11px] uppercase tracking-[0.2em] text-white/35">Move your cursor — the studio follows</p>
-        </div>
+    <nav class="landing-dots fixed right-5 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-2 sm:flex" aria-label="Scroll scenes">
+        @foreach(['Studio', 'Submit', 'Review', 'Scan', 'Ship'] as $i => $label)
+            <button type="button" class="landing-dot" data-scroll-to="{{ $i }}" aria-label="{{ $label }}"></button>
+        @endforeach
+    </nav>
 
-        <div class="landing-steps mt-14 grid max-w-xl gap-3 sm:grid-cols-3 lg:mt-20">
-            <div class="landing-card">
-                <div class="text-ember">01</div>
-                <div class="mt-2 font-medium">Submit</div>
-                <p class="mt-1 text-sm text-white/50">PDF, Drive, tags, due date.</p>
+    <main id="landing-scroll" class="relative z-10">
+        <section class="landing-scene" data-landing-scene="0">
+            <div class="landing-scene-copy">
+                <p class="landing-kicker">Capstone Assessment Studio</p>
+                <h1 class="font-display text-[2.35rem] leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.2rem]">Defense-ready papers, without the Notion chaos.</h1>
+                <p class="mt-6 max-w-md text-base text-white/65 sm:text-lg">Scroll — each chapter of the capstone journey gets its own studio moment.</p>
+                <div class="mt-9 flex flex-wrap gap-3">
+                    <a href="{{ route('register') }}" class="btn-primary !bg-ember px-5 shadow-glow">Start as a student</a>
+                    <a href="{{ route('login') }}" class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 backdrop-blur hover:bg-white/10">Adviser log in</a>
+                </div>
             </div>
-            <div class="landing-card">
-                <div class="text-ember">02</div>
-                <div class="mt-2 font-medium">Review</div>
-                <p class="mt-1 text-sm text-white/50">Status, score, remarks, scan.</p>
+        </section>
+
+        <section class="landing-scene" data-landing-scene="1">
+            <div class="landing-scene-copy">
+                <p class="landing-kicker">01 · Submit</p>
+                <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Drop the manuscript.</h2>
+                <p class="mt-4 max-w-md text-white/65">PDF upload or Google Drive link — tagged, dated, and in the queue in seconds.</p>
             </div>
-            <div class="landing-card">
-                <div class="text-ember">03</div>
-                <div class="mt-2 font-medium">Ship</div>
-                <p class="mt-1 text-sm text-white/50">Versions, archive, CSV.</p>
+        </section>
+
+        <section class="landing-scene" data-landing-scene="2">
+            <div class="landing-scene-copy">
+                <p class="landing-kicker">02 · Review</p>
+                <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Sir opens it live.</h2>
+                <p class="mt-4 max-w-md text-white/65">Preview in-browser, set status, score, and leave feedback — no download-first workflow.</p>
             </div>
-        </div>
+        </section>
+
+        <section class="landing-scene" data-landing-scene="3">
+            <div class="landing-scene-copy">
+                <p class="landing-kicker">03 · Reference Detective</p>
+                <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Catch missing citations.</h2>
+                <p class="mt-4 max-w-md text-white/65">Flags bibliography entries not used in the body — and citations missing from the list.</p>
+            </div>
+        </section>
+
+        <section class="landing-scene" data-landing-scene="4">
+            <div class="landing-scene-copy">
+                <p class="landing-kicker">04 · Ship</p>
+                <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Cleared for defense.</h2>
+                <p class="mt-4 max-w-md text-white/65">Versions, archive, CSV export — the whole capstone trail in one studio.</p>
+                <div class="mt-9 flex flex-wrap gap-3">
+                    <a href="{{ route('register') }}" class="btn-primary !bg-ember px-5 shadow-glow">Join CAST</a>
+                    <a href="{{ route('login') }}" class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 backdrop-blur hover:bg-white/10">Adviser log in</a>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <p class="landing-scroll-hint fixed bottom-6 left-1/2 z-30 -translate-x-1/2 text-[11px] uppercase tracking-[0.2em] text-white/35">Scroll to explore</p>
 </body>
 </html>

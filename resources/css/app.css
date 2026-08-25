@@ -104,6 +104,36 @@ body.landing-3d {
     overflow-x: hidden;
 }
 
+.landing-scene {
+    @apply relative flex min-h-[100dvh] items-center px-6;
+}
+
+.landing-scene-copy {
+    @apply mx-auto w-full max-w-xl opacity-0 transition duration-700 lg:max-w-[34rem];
+    transform: translateY(24px);
+}
+
+.landing-scene-copy.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+.landing-kicker {
+    @apply mb-5 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/55 backdrop-blur;
+}
+
+.landing-dot {
+    @apply h-2.5 w-2.5 rounded-full border border-white/25 bg-white/10 transition;
+}
+
+.landing-dot.is-active {
+    @apply scale-125 border-ember bg-ember shadow-glow;
+}
+
+.landing-scroll-hint {
+    transition: opacity 0.4s ease;
+}
+
 .landing-canvas {
     position: fixed;
     inset: 0;
@@ -123,8 +153,8 @@ body.landing-3d {
 }
 
 .landing-nav {
-    @apply relative z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5;
-    background: linear-gradient(180deg, rgba(5, 6, 10, 0.55), transparent);
+    @apply z-30 mx-auto flex max-w-6xl items-center justify-between px-6 py-5;
+    background: linear-gradient(180deg, rgba(5, 6, 10, 0.72), transparent);
 }
 
 .landing-copy {

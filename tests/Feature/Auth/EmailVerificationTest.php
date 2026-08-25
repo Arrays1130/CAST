@@ -13,13 +13,14 @@ class EmailVerificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_email_verification_screen_can_be_rendered(): void
+    public function test_email_verification_screen_explains_link_not_code(): void
     {
         $user = User::factory()->unverified()->create();
 
-        $response = $this->actingAs($user)->get('/verify-email');
-
-        $response->assertStatus(200);
+        $this->actingAs($user)
+            ->get('/verify-email')
+            ->assertOk()
+            ->assertSee('not a 6-digit code', false);
     }
 
     public function test_email_can_be_verified(): void

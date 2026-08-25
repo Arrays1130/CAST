@@ -31,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/updates/{notice}', [NoticeController::class, 'markRead'])->name('notices.read');
 
     Route::get('/students', [StudentController::class, 'index'])->middleware('teacher')->name('students.index');
+    Route::post('/students/{user}/verify', [StudentController::class, 'verify'])
+        ->middleware(['teacher', 'throttle:30,1'])
+        ->name('students.verify');
     Route::get('/papers', [PaperController::class, 'index'])->name('papers.index');
     Route::get('/papers/export', [PaperController::class, 'export'])->middleware('teacher')->name('papers.export');
     Route::get('/papers/create', [PaperController::class, 'create'])->middleware('student')->name('papers.create');

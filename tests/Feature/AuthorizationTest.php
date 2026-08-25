@@ -94,6 +94,33 @@ class AuthorizationTest extends TestCase
         $this->assertSame('student', $student->fresh()->role);
     }
 
+    public function test_teacher_can_verify_pending_student(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->unverified()->create([
+            'role' => 'student',
+            'email' => 'pending-verify@school.test',
+        ]);
+
+        $this->actingAs($teacher)
+            ->post(route('students.verify', $student))
+            ->assertRedirect();
+
+        $this->assertTrue($student->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_student_cannot_verify_another_student(): void
+    {
+        $actor = User::factory()->create(['role' => 'student']);
+        $pending = User::factory()->unverified()->create(['role' => 'student']);
+
+        $this->actingAs($actor)
+            ->post(route('students.verify', $pending))
+            ->assertForbidden();
+
+        $this->assertFalse($pending->fresh()->hasVerifiedEmail());
+    }
+
     public function test_student_cannot_open_students_roster(): void
     {
         $student = User::factory()->create(['role' => 'student']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -37,5 +38,19 @@ class StudentController extends Controller
         ];
 
         return view('students.index', compact('students', 'stats', 'q'));
+    }
+
+    public function verify(Request $request, User $user): RedirectResponse
+    {
+        abort_unless($request->user()?->isTeacher(), 403);
+        abort_unless($user->isStudent(), 404);
+
+        if ($user->hasVerifiedEmail()) {
+            return back()->with('status', $user->name.' is already verified.');
+        }
+
+        $user->markEmailAsVerified();
+
+        return back()->with('status', $user->name.' can now log in without the email link.');
     }
 }

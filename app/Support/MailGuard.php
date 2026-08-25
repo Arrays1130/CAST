@@ -35,7 +35,7 @@ final class MailGuard
             }
         }
 
-        if ($mailer === 'resend' && ! filled(env('RESEND_API_KEY'))) {
+        if ($mailer === 'resend' && ! filled(config('services.resend.key'))) {
             throw new RuntimeException(
                 'MAIL_MAILER=resend but RESEND_API_KEY is missing on Render.'
             );

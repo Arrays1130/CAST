@@ -47,6 +47,7 @@
                             <th class="px-4 py-3 font-medium">Status</th>
                             <th class="px-4 py-3 font-medium">Papers</th>
                             <th class="px-4 py-3 font-medium">Joined</th>
+                            <th class="px-4 py-3 font-medium"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-notion-line">
@@ -74,10 +75,18 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-notion-muted">{{ $student->created_at?->format('M j, Y') }}</td>
+                                <td class="px-4 py-3 text-right">
+                                    @unless($student->email_verified_at)
+                                        <form method="POST" action="{{ route('students.verify', $student) }}">
+                                            @csrf
+                                            <button type="submit" class="rounded-lg border border-notion-line bg-white px-3 py-1.5 text-xs font-medium hover:bg-paper">Confirm email</button>
+                                        </form>
+                                    @endunless
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-12 text-center text-notion-muted">
+                                <td colspan="6" class="px-4 py-12 text-center text-notion-muted">
                                     {{ $q !== '' ? 'No students match that search.' : 'No students registered yet.' }}
                                 </td>
                             </tr>

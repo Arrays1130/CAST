@@ -54,10 +54,11 @@ class EmailVerificationNotificationController extends Controller
             }
 
             // #region agent log
+            $safeMessage = mb_substr(preg_replace('/\b[a-z0-9]{16}\b/i', '[redacted]', $message) ?? $message, 0, 180);
             $this->debugMailLog($hypothesis, 'EmailVerificationNotificationController::store:catch', 'Verification email send failed', [
                 'exception_class' => $class,
                 'exception_code' => (string) $e->getCode(),
-                'exception_message' => mb_substr(preg_replace('/\b[a-z0-9]{16}\b/i', '[redacted]', $message) ?? $message, 0, 240),
+                'exception_message' => $safeMessage,
                 'mailer' => (string) config('mail.default'),
                 'host' => (string) config('mail.mailers.smtp.host'),
                 'port' => (int) config('mail.mailers.smtp.port'),
@@ -66,7 +67,7 @@ class EmailVerificationNotificationController extends Controller
             // #endregion
 
             return back()->withErrors([
-                'email' => 'Could not send verification email ('.$class.'). Check Render Logs for [debug-mail].',
+                'email' => 'Mail error ['.$hypothesis.']: '.$class.' — '.$safeMessage,
             ]);
         }
 

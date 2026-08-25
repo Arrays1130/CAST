@@ -21,16 +21,22 @@ final class MailGuard
 
         if (in_array($mailer, ['log', 'array'], true)) {
             throw new RuntimeException(
-                'Mail is set to “'.$mailer.'”. Set MAIL_MAILER=smtp on Render with Gmail App Password so reset/verify emails are delivered.'
+                'Mail is set to “'.$mailer.'”. On Render use MAIL_MAILER=resend with RESEND_API_KEY (Gmail SMTP is blocked).'
             );
         }
 
         if ($mailer === 'smtp') {
+            $host = strtolower((string) config('mail.mailers.smtp.host'));
+
+            if (config('cast.on_render') && str_contains($host, 'gmail.com')) {
+                throw new RuntimeException(MailFailures::gmailSmtpBlockedMessage());
+            }
+
             if (! filled(config('mail.mailers.smtp.host'))
                 || ! filled(config('mail.mailers.smtp.username'))
                 || ! filled(config('mail.mailers.smtp.password'))) {
                 throw new RuntimeException(
-                    'SMTP is incomplete. Set MAIL_HOST, MAIL_USERNAME, and MAIL_PASSWORD (Gmail App Password) on Render.'
+                    'SMTP is incomplete. On Render prefer Resend (RESEND_API_KEY + MAIL_MAILER=resend) instead of Gmail SMTP.'
                 );
             }
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\MailFailures;
 use App\Support\MailGuard;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -34,16 +35,6 @@ class RegisteredUserController extends Controller
             'invite_code' => ['nullable', 'string', 'max:100'],
         ]);
 
-        try {
-            MailGuard::assertDeliverable();
-        } catch (Throwable $e) {
-            report($e);
-
-            throw ValidationException::withMessages([
-                'email' => $e->getMessage() ?: 'Mail is not configured. Account creation is blocked until email delivery works.',
-            ]);
-        }
-
         $invite = (string) config('cast.teacher_invite_code');
         $isTeacher = $invite !== ''
             && hash_equals($invite, (string) $request->input('invite_code'));
@@ -56,6 +47,7 @@ class RegisteredUserController extends Controller
         ]);
 
         try {
+            MailGuard::assertDeliverable();
             event(new Registered($user));
         } catch (Throwable $e) {
             report($e);
@@ -64,7 +56,7 @@ class RegisteredUserController extends Controller
             return redirect()
                 ->route('verification.notice')
                 ->withErrors([
-                    'email' => $e->getMessage() ?: 'Account created, but the verification email failed. Check MAIL_* on Render, then use Resend.',
+                    'email' => MailFailures::friendly($e),
                 ]);
         }
 

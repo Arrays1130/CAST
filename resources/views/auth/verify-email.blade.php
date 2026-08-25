@@ -22,7 +22,7 @@
     <div class="mt-6 space-y-2 rounded-xl border border-notion-line bg-white px-3 py-3 text-xs leading-relaxed text-notion-muted">
         <p>1. Search Gmail for <span class="font-medium text-ink">CAST Studio</span> or the From address of your school Gmail.</p>
         <p>2. If it is in Spam, open it and choose <span class="font-medium text-ink">Not spam</span>.</p>
-        <p>3. Still nothing? Ask an adviser to open <span class="font-medium text-ink">Students</span> and tap <span class="font-medium text-ink">Confirm email</span>.</p>
+        <p>3. Gmail SMTP is blocked on this host — an adviser can open <span class="font-medium text-ink">Students</span> and tap <span class="font-medium text-ink">Confirm email</span>.</p>
     </div>
 
     <div class="mt-8 flex items-center justify-between gap-3">

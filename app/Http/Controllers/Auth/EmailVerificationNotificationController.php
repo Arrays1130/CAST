@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Support\MailFailures;
 use App\Support\MailGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class EmailVerificationNotificationController extends Controller
             report($e);
 
             return back()->withErrors([
-                'email' => $e->getMessage() ?: 'Could not send verification email. Check MAIL_* settings on Render.',
+                'email' => MailFailures::friendly($e),
             ]);
         }
 

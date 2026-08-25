@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\MailFailures;
 use App\Support\MailGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -67,7 +68,7 @@ class PasswordResetLinkController extends Controller
             return back()
                 ->withInput($request->only('email', 'portal'))
                 ->withErrors([
-                    'email' => $e->getMessage() ?: 'Could not send the reset email. Check MAIL_* settings on Render.',
+                    'email' => MailFailures::friendly($e),
                 ]);
         }
 

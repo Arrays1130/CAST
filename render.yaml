@@ -25,10 +25,18 @@ services:
         value: "5432"
       - key: DATABASE_URL
         sync: false
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: "480"
+      - key: CACHE_STORE
+        value: database
       - key: SESSION_SECURE_COOKIE
         value: "true"
       - key: SESSION_ENCRYPT
         value: "true"
+      - key: APP_URL
+        value: https://cast-5y3n.onrender.com
       - key: SEED_DEMO
         value: "false"
       - key: TEACHER_INVITE_CODE

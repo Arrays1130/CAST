@@ -59,7 +59,7 @@
                     <p class="landing-body-copy landing-stagger !mt-0" style="--d:3">Submit, review, and refine every capstone chapter inside one focused workspace — built for students and advisers.</p>
                     <div class="mt-8 flex flex-wrap gap-3 landing-stagger" style="--d:4">
                         <a href="{{ route('register') }}" class="landing-primary-cta">Start your workspace <span aria-hidden="true">→</span></a>
-                        <a href="{{ route('login') }}" class="landing-secondary-cta">Adviser log in</a>
+                        <a href="{{ route('login.adviser') }}" class="landing-secondary-cta">Adviser log in</a>
                     </div>
                     <div class="landing-proof-row landing-stagger" style="--d:5" aria-label="CAST capabilities">
                         <span>PDF preview</span><i></i><span>Live feedback</span><i></i><span>Citation scan</span>
@@ -109,7 +109,7 @@
                     <p class="landing-body-copy landing-stagger" style="--d:2">Keep every version, decision, and approval in one complete capstone trail.</p>
                     <div class="mt-9 flex flex-wrap gap-3 landing-stagger" style="--d:3">
                         <a href="{{ route('register') }}" class="landing-primary-cta">Join CAST <span aria-hidden="true">→</span></a>
-                        <a href="{{ route('login') }}" class="landing-secondary-cta">Adviser log in</a>
+                        <a href="{{ route('login.adviser') }}" class="landing-secondary-cta">Adviser log in</a>
                     </div>
                 </div>
             </div>

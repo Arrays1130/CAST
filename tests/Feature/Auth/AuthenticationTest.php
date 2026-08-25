@@ -10,33 +10,92 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_login_screen_can_be_rendered(): void
+    public function test_login_chooser_can_be_rendered(): void
     {
-        $response = $this->get('/login');
-
-        $response->assertStatus(200);
+        $this->get('/login')
+            ->assertOk()
+            ->assertSee('Who is logging in?')
+            ->assertSee('Student log in')
+            ->assertSee('Adviser log in');
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    public function test_student_and_adviser_login_screens_can_be_rendered(): void
     {
-        $user = User::factory()->create();
+        $this->get(route('login.student'))
+            ->assertOk()
+            ->assertSee('Student log in')
+            ->assertSee('Student portal');
 
-        $response = $this->post('/login', [
+        $this->get(route('login.adviser'))
+            ->assertOk()
+            ->assertSee('Adviser log in')
+            ->assertSee('Adviser portal');
+    }
+
+    public function test_students_can_authenticate_on_student_portal(): void
+    {
+        $user = User::factory()->create(['role' => 'student']);
+
+        $response = $this->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'password',
+            'role' => 'student',
         ]);
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('papers.index', absolute: false));
     }
 
+    public function test_teachers_can_authenticate_on_adviser_portal(): void
+    {
+        $user = User::factory()->create(['role' => 'teacher']);
+
+        $response = $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+            'role' => 'teacher',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('papers.index', absolute: false));
+    }
+
+    public function test_students_cannot_authenticate_on_adviser_portal(): void
+    {
+        $user = User::factory()->create(['role' => 'student']);
+
+        $this->from(route('login.adviser'))->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+            'role' => 'teacher',
+        ])->assertSessionHasErrors('email')
+            ->assertRedirect(route('login.adviser'));
+
+        $this->assertGuest();
+    }
+
+    public function test_teachers_cannot_authenticate_on_student_portal(): void
+    {
+        $user = User::factory()->create(['role' => 'teacher']);
+
+        $this->from(route('login.student'))->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+            'role' => 'student',
+        ])->assertSessionHasErrors('email')
+            ->assertRedirect(route('login.student'));
+
+        $this->assertGuest();
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'student']);
 
-        $this->post('/login', [
+        $this->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'wrong-password',
+            'role' => 'student',
         ]);
 
         $this->assertGuest();

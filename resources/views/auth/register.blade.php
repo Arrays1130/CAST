@@ -1,6 +1,12 @@
-<x-guest-layout>
-    <h1 class="font-display text-4xl">Join the studio</h1>
-    <p class="mt-2 text-sm text-notion-muted">Students self-register. Advisers need an invite code from your school.</p>
+<x-guest-layout
+    title="Join CAST"
+    panel-title="Students join freely."
+    panel-copy="Create a student account in seconds. Advisers need an invite code from your school."
+>
+    <p class="inline-flex rounded-full border border-ember/25 bg-ember/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-ember">Student signup</p>
+    <h1 class="mt-4 font-display text-4xl leading-none tracking-tight">Join the studio</h1>
+    <p class="mt-3 text-sm leading-relaxed text-notion-muted">Default accounts are student. Use an adviser invite code only if your school gave you one.</p>
+
     <form method="POST" action="{{ route('register') }}" class="mt-8 space-y-4">
         @csrf
         <div>
@@ -30,5 +36,9 @@
         </div>
         <x-primary-button class="w-full">Create account</x-primary-button>
     </form>
-    <p class="mt-5 text-sm text-notion-muted">Already have an account? <a class="font-medium text-ember" href="{{ route('login') }}">Log in</a></p>
+
+    <div class="mt-6 space-y-2 text-sm text-notion-muted">
+        <p>Already a student? <a class="font-medium text-ember" href="{{ route('login.student') }}">Student log in</a></p>
+        <p>Already an adviser? <a class="font-medium text-ember" href="{{ route('login.adviser') }}">Adviser log in</a></p>
+    </div>
 </x-guest-layout>

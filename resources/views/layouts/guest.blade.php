@@ -20,10 +20,10 @@
                     CAST Studio
                 </a>
                 <div class="relative max-w-md">
-                    <p class="font-display text-4xl leading-tight">Capstone papers, reviewed like a production.</p>
-                    <p class="mt-4 text-white/55">Submit, comment, score, and ship a defense-ready manuscript in one studio.</p>
+                    <p class="font-display text-4xl leading-tight">{{ $panelTitle ?? 'Capstone papers, reviewed like a production.' }}</p>
+                    <p class="mt-4 text-white/55">{{ $panelCopy ?? 'Submit, comment, score, and ship a defense-ready manuscript in one studio.' }}</p>
                 </div>
-                <p class="relative text-xs text-white/35">Adviser workspace · student submissions · version history</p>
+                <p class="relative text-xs text-white/35">{{ $panelFooter ?? 'Adviser workspace · student submissions · version history' }}</p>
             </div>
             <div class="flex items-center justify-center bg-paper px-5 py-10 sm:px-6 sm:py-12">
                 <div class="w-full max-w-sm">

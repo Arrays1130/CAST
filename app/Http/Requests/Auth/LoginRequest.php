@@ -30,6 +30,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'role' => ['required', 'in:student,teacher'],
         ];
     }
 
@@ -47,6 +48,22 @@ class LoginRequest extends FormRequest
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
+            ]);
+        }
+
+        $user = Auth::user();
+        $expectedRole = $this->string('role')->toString();
+
+        if ($user === null || $user->role !== $expectedRole) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            $message = $expectedRole === 'teacher'
+                ? 'This account is for students. Use Student login instead.'
+                : 'This account is for advisers. Use Adviser login instead.';
+
+            throw ValidationException::withMessages([
+                'email' => $message,
             ]);
         }
 
@@ -81,6 +98,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->string('role').'|'.$this->ip());
     }
 }

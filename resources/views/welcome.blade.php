@@ -9,9 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/landing-3d.js'])
 </head>
-<body class="landing-3d bg-[#07080c] font-sans text-white">
-    <div class="pointer-events-none fixed inset-0 landing-grain"></div>
-    <header class="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+<body class="landing-3d font-sans text-white">
+    <canvas id="cast-3d" class="landing-canvas" aria-hidden="true"></canvas>
+    <div class="pointer-events-none landing-vignette"></div>
+    <div class="pointer-events-none landing-grain"></div>
+
+    <header class="landing-nav">
         <a href="{{ url('/') }}" class="flex items-center gap-2 text-sm font-semibold">
             <span class="cast-mark">C</span>
             CAST Studio
@@ -22,39 +25,34 @@
         </div>
     </header>
 
-    <main class="relative z-10 mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl items-center gap-8 px-6 pb-16 pt-6 lg:grid-cols-[1.05fr_0.95fr] lg:pb-10">
-        <div class="relative z-10 max-w-xl lg:max-w-none">
-            <p class="mb-4 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/55">Capstone Assessment Studio</p>
-            <h1 class="font-display text-[2.15rem] leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">Defense-ready papers, without the Notion chaos.</h1>
-            <p class="mt-6 max-w-xl text-lg text-white/60">Students drop a manuscript. Advisers review, comment, score, and clear it for defense — all in one dark studio.</p>
-            <div class="mt-10 flex flex-wrap gap-3">
-                <a href="{{ route('register') }}" class="btn-primary !bg-ember shadow-glow">Start as a student</a>
-                <a href="{{ route('login') }}" class="rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/10">Adviser log in</a>
+    <main class="relative z-10 mx-auto flex min-h-[100dvh] max-w-6xl flex-col justify-end px-6 pb-10 pt-28 sm:justify-center sm:pb-16 lg:pt-16">
+        <div class="landing-copy max-w-xl lg:max-w-[34rem]">
+            <p class="mb-5 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/55 backdrop-blur">Capstone Assessment Studio</p>
+            <h1 class="font-display text-[2.4rem] leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.4rem]">Defense-ready papers, without the Notion chaos.</h1>
+            <p class="mt-6 max-w-md text-base text-white/65 sm:text-lg">Students drop a manuscript. Advisers review, comment, score, and clear it for defense — live, in one dark studio.</p>
+            <div class="mt-9 flex flex-wrap gap-3">
+                <a href="{{ route('register') }}" class="btn-primary !bg-ember px-5 shadow-glow">Start as a student</a>
+                <a href="{{ route('login') }}" class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 backdrop-blur hover:bg-white/10">Adviser log in</a>
             </div>
-            <div class="mt-12 grid max-w-xl gap-3 text-left sm:grid-cols-3">
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-                    <div class="text-ember">01</div>
-                    <div class="mt-2 font-medium">Submit</div>
-                    <p class="mt-1 text-sm text-white/50">File or Drive link, tags, due date.</p>
-                </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-                    <div class="text-ember">02</div>
-                    <div class="mt-2 font-medium">Review</div>
-                    <p class="mt-1 text-sm text-white/50">Status, score, remarks, comments.</p>
-                </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-                    <div class="text-ember">03</div>
-                    <div class="mt-2 font-medium">Ship</div>
-                    <p class="mt-1 text-sm text-white/50">Versions, archive, CSV export.</p>
-                </div>
-            </div>
+            <p class="mt-6 text-[11px] uppercase tracking-[0.2em] text-white/35">Move your cursor — the studio follows</p>
         </div>
 
-        <div class="relative h-[380px] w-full sm:h-[460px] lg:h-[620px]">
-            <div class="absolute inset-8 rounded-full bg-ember/20 blur-3xl"></div>
-            <div class="absolute right-4 top-10 h-40 w-40 rounded-full bg-[#38bdf8]/20 blur-3xl"></div>
-            <canvas id="cast-3d" class="relative z-10 h-full w-full" aria-hidden="true"></canvas>
-            <p class="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 text-[11px] uppercase tracking-[0.18em] text-white/35">Move your cursor</p>
+        <div class="landing-steps mt-14 grid max-w-xl gap-3 sm:grid-cols-3 lg:mt-20">
+            <div class="landing-card">
+                <div class="text-ember">01</div>
+                <div class="mt-2 font-medium">Submit</div>
+                <p class="mt-1 text-sm text-white/50">PDF, Drive, tags, due date.</p>
+            </div>
+            <div class="landing-card">
+                <div class="text-ember">02</div>
+                <div class="mt-2 font-medium">Review</div>
+                <p class="mt-1 text-sm text-white/50">Status, score, remarks, scan.</p>
+            </div>
+            <div class="landing-card">
+                <div class="text-ember">03</div>
+                <div class="mt-2 font-medium">Ship</div>
+                <p class="mt-1 text-sm text-white/50">Versions, archive, CSV.</p>
+            </div>
         </div>
     </main>
 </body>

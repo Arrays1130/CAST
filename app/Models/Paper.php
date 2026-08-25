@@ -22,6 +22,8 @@ class Paper extends Model
         'tags',
         'score',
         'remarks',
+        'reference_scan',
+        'reference_scanned_at',
         'archived_at',
     ];
 
@@ -32,6 +34,8 @@ class Paper extends Model
             'submitted_at' => 'datetime',
             'due_at' => 'datetime',
             'archived_at' => 'datetime',
+            'reference_scan' => 'array',
+            'reference_scanned_at' => 'datetime',
         ];
     }
 

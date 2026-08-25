@@ -6,6 +6,7 @@ use App\Enums\PaperStatus;
 use App\Models\Paper;
 use App\Models\PaperVersion;
 use App\Models\User;
+use App\Services\ReferenceDetective;
 use App\Services\Workspace;
 use App\Support\GoogleDriveLink;
 use Illuminate\Http\RedirectResponse;
@@ -131,6 +132,21 @@ class PaperController extends Controller
             'paper' => $paper,
             'statuses' => PaperStatus::cases(),
         ]);
+    }
+
+    public function scanReferences(Request $request, Paper $paper, ReferenceDetective $detective): RedirectResponse
+    {
+        $this->authorize('view', $paper);
+
+        $result = $detective->scan($paper);
+        $paper->update([
+            'reference_scan' => $result,
+            'reference_scanned_at' => now(),
+        ]);
+
+        return back()->with('status', $result['status'] === 'ok'
+            ? 'Reference Detective finished.'
+            : 'Reference Detective could not fully scan this file.');
     }
 
     public function updateDetails(Request $request, Paper $paper): RedirectResponse

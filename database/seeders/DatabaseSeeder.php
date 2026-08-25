@@ -9,6 +9,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (! $this->shouldSeedDemo()) {
+            return;
+        }
+
         if (User::query()->exists()) {
             return;
         }
@@ -32,5 +36,14 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+    }
+
+    protected function shouldSeedDemo(): bool
+    {
+        if (filter_var(config('cast.seed_demo', false), FILTER_VALIDATE_BOOL)) {
+            return true;
+        }
+
+        return app()->environment('local', 'testing');
     }
 }

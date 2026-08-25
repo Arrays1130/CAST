@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'student' => \App\Http\Middleware\EnsureUserIsStudent::class,
         ]);
         $middleware->trustProxies(at: '*');
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('papers.index'));
     })

@@ -19,6 +19,17 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'student@cast.test', 'role' => 'student']);
     }
 
+    public function test_it_skips_demo_seed_outside_local_without_flag(): void
+    {
+        config(['cast.seed_demo' => false]);
+        $this->app->detectEnvironment(fn () => 'production');
+
+        (new DatabaseSeeder)->run();
+
+        $this->assertDatabaseMissing('users', ['email' => 'sir@cast.test']);
+        $this->assertSame(0, User::query()->count());
+    }
+
     public function test_it_does_not_seed_when_users_already_exist(): void
     {
         User::factory()->create(['email' => 'owner@example.com']);

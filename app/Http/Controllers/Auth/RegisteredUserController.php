@@ -15,17 +15,12 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
     /**
-     * Handle an incoming registration request.
-     *
      * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
@@ -34,19 +29,24 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'invite_code' => ['nullable', 'string', 'max:100'],
         ]);
+
+        $invite = (string) config('cast.teacher_invite_code');
+        $isTeacher = $invite !== ''
+            && hash_equals($invite, (string) $request->input('invite_code'));
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'student',
+            'role' => $isTeacher ? 'teacher' : 'student',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('papers.index', absolute: false));
+        return redirect()->intended(route('verification.notice', absolute: false));
     }
 }

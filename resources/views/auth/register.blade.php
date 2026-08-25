@@ -1,6 +1,6 @@
 <x-guest-layout>
     <h1 class="font-display text-4xl">Join the studio</h1>
-    <p class="mt-2 text-sm text-notion-muted">Students only. Advisers are invited.</p>
+    <p class="mt-2 text-sm text-notion-muted">Students self-register. Advisers need an invite code from your school.</p>
     <form method="POST" action="{{ route('register') }}" class="mt-8 space-y-4">
         @csrf
         <div>
@@ -21,6 +21,12 @@
         <div>
             <x-input-label for="password_confirmation" value="Repeat password" />
             <x-text-input id="password_confirmation" class="block w-full" type="password" name="password_confirmation" required />
+        </div>
+        <div>
+            <x-input-label for="invite_code" value="Adviser invite code (optional)" />
+            <x-text-input id="invite_code" class="block w-full" type="text" name="invite_code" :value="old('invite_code')" autocomplete="off" />
+            <p class="mt-1 text-xs text-notion-faint">Leave blank for a student account.</p>
+            <x-input-error :messages="$errors->get('invite_code')" class="mt-1" />
         </div>
         <x-primary-button class="w-full">Create account</x-primary-button>
     </form>

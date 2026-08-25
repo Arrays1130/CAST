@@ -96,3 +96,27 @@
     width: 1px;
     background: rgba(22, 20, 28, 0.12);
 }
+
+body.landing-3d {
+    background: #07080c;
+    background-image: none;
+    color: #fff;
+}
+
+#cast-3d {
+    display: block;
+}
+
+.landing-grain {
+    opacity: 0.14;
+    mix-blend-mode: overlay;
+    background-image:
+        repeating-radial-gradient(circle at 18% 32%, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 3px),
+        repeating-radial-gradient(circle at 78% 64%, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .landing-grain {
+        display: none;
+    }
+}

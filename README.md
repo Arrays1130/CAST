@@ -2,23 +2,38 @@
 
 Students submit papers. Advisers review, comment, score, and approve — online.
 
-## Demo logins
+## Local demo logins
+
+Only when `APP_ENV=local` (or `SEED_DEMO=true`):
 
 - Teacher: `sir@cast.test` / `password`
 - Student: `student@cast.test` / `password`
 
-## Deploy free on Render (keeps data)
+Production never seeds these accounts unless you explicitly set `SEED_DEMO=true`.
 
-Render’s free disk is wiped on restart. CAST needs a free **Neon** Postgres URL.
+## Deploy on Render
 
-1. Create a database at [neon.tech](https://neon.tech) (free). Copy the connection string (`postgresql://…?sslmode=require`).
-2. In Render → service **cast** → **Environment** → add `DATABASE_URL` = that string.
-3. Redeploy.
+1. Create a free [Neon](https://neon.tech) Postgres database. Copy `DATABASE_URL`.
+2. In Render → **cast** → **Environment**, set at least:
+   - `APP_KEY` — generate with `php artisan key:generate --show` (do **not** commit this)
+   - `DATABASE_URL` — Neon connection string
+   - `TEACHER_INVITE_CODE` — shared secret for adviser signup (optional but recommended)
+3. Recommended:
+   - Mail (password reset / verify email): `MAIL_MAILER`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS` (e.g. Resend SMTP)
+   - Persistent uploads: Cloudflare R2 / S3 — `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_BUCKET`, `AWS_ENDPOINT`, `AWS_URL`, `AWS_USE_PATH_STYLE_ENDPOINT=true` for R2
+4. Redeploy. Rotate any key or DB password that was ever pasted in chat or committed.
 
-Without `DATABASE_URL`, production will not start.
+Without `DATABASE_URL` and `APP_KEY`, production will not start.
 
-Online papers should use a **Google Drive** share link (Anyone with the link). Computer uploads on the free host can vanish.
+Online manuscripts should prefer a **Google Drive** share link if you have no S3/R2. Computer uploads on the free host vanish unless object storage is configured.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Arrays1130/CAST)
 
 Free Render sleeps after idle; first load can take ~30–60s.
+
+## Security notes
+
+- Self-register is student-only unless a valid `TEACHER_INVITE_CODE` is entered
+- Existing advisers can promote a student from **Settings**
+- Email verification is required before using the studio
+- Reference Detective flags unused bibliography entries and missing citations (heuristic)

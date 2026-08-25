@@ -6,6 +6,8 @@ export APP_ENV="${APP_ENV:-production}"
 export APP_DEBUG="${APP_DEBUG:-false}"
 export LOG_CHANNEL="${LOG_CHANNEL:-stderr}"
 export QUEUE_CONNECTION="${QUEUE_CONNECTION:-sync}"
+export SESSION_SECURE_COOKIE="${SESSION_SECURE_COOKIE:-true}"
+export SESSION_ENCRYPT="${SESSION_ENCRYPT:-true}"
 
 if [ -n "$KOYEB_PUBLIC_DOMAIN" ]; then
     export APP_URL="https://${KOYEB_PUBLIC_DOMAIN}"
@@ -48,6 +50,10 @@ else
 fi
 
 if [ -z "$APP_KEY" ]; then
+    echo "APP_KEY is required in production. Set it in the Render dashboard (php artisan key:generate --show)." >&2
+    if [ "$APP_ENV" = "production" ]; then
+        exit 1
+    fi
     php artisan key:generate --force
 fi
 
@@ -56,7 +62,12 @@ chmod -R ug+rwx storage bootstrap/cache || true
 
 php artisan config:clear
 php artisan migrate --force
-php artisan db:seed --force
+
+# Never seed known demo passwords on production unless SEED_DEMO=true
+if [ "${SEED_DEMO}" = "true" ] || [ "${APP_ENV}" = "local" ]; then
+    php artisan db:seed --force
+fi
+
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache

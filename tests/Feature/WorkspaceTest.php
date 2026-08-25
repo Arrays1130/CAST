@@ -292,4 +292,45 @@ class WorkspaceTest extends TestCase
 
         $this->assertNotNull($notice->fresh()->read_at);
     }
+
+    public function test_reference_detective_scan_persists_on_paper(): void
+    {
+        Storage::fake('papers');
+        $body = "Smith (2020) said hello.\n\nReferences\nSmith, A. (2020). Hello world study. Journal, 1, 1-2.\nUnused, Z. (2017). Ghost paper. Nowhere Press.\n";
+        Storage::disk('papers')->put('sample.docx', $this->fakeDocx($body));
+
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->create(['role' => 'student']);
+        $paper = Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Scan me',
+            'status' => 'submitted',
+            'file_path' => 'sample.docx',
+            'original_filename' => 'sample.docx',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($teacher)
+            ->post(route('papers.scan-references', $paper))
+            ->assertRedirect();
+
+        $paper->refresh();
+        $this->assertNotNull($paper->reference_scanned_at);
+        $this->assertSame('ok', $paper->reference_scan['status']);
+        $this->assertNotEmpty($paper->reference_scan['unused']);
+    }
+
+    private function fakeDocx(string $text): string
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'docx');
+        $zip = new \ZipArchive;
+        $zip->open($tmp, \ZipArchive::OVERWRITE);
+        $zip->addFromString('[Content_Types].xml', '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"></Types>');
+        $zip->addFromString('word/document.xml', '<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>'.htmlspecialchars($text).'</w:t></w:r></w:p></w:body></w:document>');
+        $zip->close();
+        $binary = file_get_contents($tmp);
+        @unlink($tmp);
+
+        return $binary ?: '';
+    }
 }

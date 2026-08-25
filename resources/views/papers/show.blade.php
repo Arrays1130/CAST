@@ -162,6 +162,53 @@
             </div>
         @endif
 
+        @if(auth()->user()->isTeacher() || auth()->id() === $paper->user_id)
+            @php($scan = $paper->reference_scan)
+            <div class="surface mt-8 p-5">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 class="font-display text-xl">Reference Detective</h2>
+                        <p class="mt-1 text-sm text-notion-muted">Flags bibliography entries that may not appear in the body, and citations that may be missing from the list. Heuristic — double-check before grading.</p>
+                    </div>
+                    <form method="POST" action="{{ route('papers.scan-references', $paper) }}">
+                        @csrf
+                        <button class="btn-primary">{{ $scan ? 'Re-scan' : 'Scan references' }}</button>
+                    </form>
+                </div>
+
+                @if(! $paper->hasLocalFile())
+                    <p class="mt-4 rounded-xl bg-[#fff6ed] px-3 py-2 text-sm text-[#9a3412]">Upload a PDF or DOCX to scan. Drive-only papers are not scanned yet.</p>
+                @elseif($scan)
+                    <p class="mt-3 text-xs text-notion-faint">Last scan {{ $paper->reference_scanned_at?->diffForHumans() }}</p>
+                    @foreach(($scan['warnings'] ?? []) as $warning)
+                        <p class="mt-2 rounded-xl bg-paper px-3 py-2 text-sm text-notion-muted">{{ $warning }}</p>
+                    @endforeach
+                    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <h3 class="text-sm font-semibold text-ink">In references, not in body <span class="text-notion-faint">({{ count($scan['unused'] ?? []) }})</span></h3>
+                            <ul class="mt-2 space-y-2 text-sm text-notion-muted">
+                                @forelse(($scan['unused'] ?? []) as $item)
+                                    <li class="rounded-xl border border-notion-line bg-white/70 px-3 py-2">{{ $item }}</li>
+                                @empty
+                                    <li class="text-notion-faint">None detected.</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-ink">Cited in body, missing from list <span class="text-notion-faint">({{ count($scan['missing'] ?? []) }})</span></h3>
+                            <ul class="mt-2 space-y-2 text-sm text-notion-muted">
+                                @forelse(($scan['missing'] ?? []) as $item)
+                                    <li class="rounded-xl border border-notion-line bg-white/70 px-3 py-2">{{ $item }}</li>
+                                @empty
+                                    <li class="text-notion-faint">None detected.</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        @endif
+
         @if(auth()->user()->isStudent() && auth()->id() === $paper->user_id)
             <div class="surface mt-8 p-5">
                 <h2 class="font-display text-2xl">New version</h2>

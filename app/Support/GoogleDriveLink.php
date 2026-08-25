@@ -23,8 +23,16 @@ class GoogleDriveLink
         }
 
         $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        $host = preg_replace('/^www\./', '', $host) ?: $host;
 
-        if (! str_contains($host, 'google.com')) {
+        $allowed = [
+            'drive.google.com',
+            'docs.google.com',
+            'sheets.google.com',
+            'slides.google.com',
+        ];
+
+        if (! in_array($host, $allowed, true)) {
             return null;
         }
 

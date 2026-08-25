@@ -13,6 +13,8 @@
     <canvas id="cast-3d" class="landing-canvas" aria-hidden="true"></canvas>
     <div class="pointer-events-none landing-vignette"></div>
     <div class="pointer-events-none landing-grain"></div>
+    <div class="landing-progress pointer-events-none" aria-hidden="true"><span class="landing-progress-fill"></span></div>
+    <p class="landing-scene-counter pointer-events-none" aria-hidden="true">01</p>
 
     <header class="landing-nav fixed inset-x-0 top-0 z-30">
         <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
@@ -37,7 +39,7 @@
         <section class="landing-scene" data-landing-scene="0">
             <div class="landing-scene-copy">
                 <p class="landing-kicker">Capstone Assessment Studio</p>
-                <h1 class="font-display text-[2.35rem] leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.2rem]">Defense-ready papers, without the Notion chaos.</h1>
+                <h1 class="landing-gradient-text font-display text-[2.35rem] leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.2rem]">Defense-ready papers, without the Notion chaos.</h1>
                 <p class="mt-6 max-w-md text-base text-white/65 sm:text-lg">Scroll — each chapter of the capstone journey gets its own studio moment.</p>
                 <div class="mt-9 flex flex-wrap gap-3">
                     <a href="{{ route('register') }}" class="btn-primary !bg-ember px-5 shadow-glow">Start as a student</a>
@@ -49,7 +51,7 @@
         <section class="landing-scene" data-landing-scene="1">
             <div class="landing-scene-copy">
                 <p class="landing-kicker">01 · Submit</p>
-                <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Drop the manuscript.</h2>
+                <h2 class="landing-gradient-text font-display text-4xl tracking-tight sm:text-5xl">Drop the manuscript.</h2>
                 <p class="mt-4 max-w-md text-white/65">PDF upload or Google Drive link — tagged, dated, and in the queue in seconds.</p>
             </div>
         </section>
@@ -57,7 +59,7 @@
         <section class="landing-scene" data-landing-scene="2">
             <div class="landing-scene-copy">
                 <p class="landing-kicker">02 · Review</p>
-                <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Sir opens it live.</h2>
+                <h2 class="landing-gradient-text font-display text-4xl tracking-tight sm:text-5xl">Sir opens it live.</h2>
                 <p class="mt-4 max-w-md text-white/65">Preview in-browser, set status, score, and leave feedback — no download-first workflow.</p>
             </div>
         </section>
@@ -65,7 +67,7 @@
         <section class="landing-scene" data-landing-scene="3">
             <div class="landing-scene-copy">
                 <p class="landing-kicker">03 · Reference Detective</p>
-                <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Catch missing citations.</h2>
+                <h2 class="landing-gradient-text font-display text-4xl tracking-tight sm:text-5xl">Catch missing citations.</h2>
                 <p class="mt-4 max-w-md text-white/65">Flags bibliography entries not used in the body — and citations missing from the list.</p>
             </div>
         </section>
@@ -73,7 +75,7 @@
         <section class="landing-scene" data-landing-scene="4">
             <div class="landing-scene-copy">
                 <p class="landing-kicker">04 · Ship</p>
-                <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Cleared for defense.</h2>
+                <h2 class="landing-gradient-text font-display text-4xl tracking-tight sm:text-5xl">Cleared for defense.</h2>
                 <p class="mt-4 max-w-md text-white/65">Versions, archive, CSV export — the whole capstone trail in one studio.</p>
                 <div class="mt-9 flex flex-wrap gap-3">
                     <a href="{{ route('register') }}" class="btn-primary !bg-ember px-5 shadow-glow">Join CAST</a>

@@ -8,6 +8,7 @@ use App\Models\PaperVersion;
 use App\Models\User;
 use App\Services\ReferenceDetective;
 use App\Services\Workspace;
+use App\Support\DurableStorage;
 use App\Support\GoogleDriveLink;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -80,14 +81,21 @@ class PaperController extends Controller
             'doc_type' => ['nullable', 'string', 'max:80'],
             'group_name' => ['nullable', 'string', 'max:255'],
             'tags' => ['nullable', 'string', 'max:255'],
-            'due_at' => ['nullable', 'date'],
             'file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:20480'],
             'drive_url' => ['nullable', 'url', 'max:500'],
         ]);
 
+        if ($request->hasFile('file') && DurableStorage::requiresDriveInProduction()) {
+            return back()->withErrors([
+                'file' => 'Computer uploads are disabled on this host (files would disappear after restart). Use a Google Drive share link instead, or ask an admin to configure AWS_BUCKET / R2.',
+            ])->withInput();
+        }
+
         if (! $request->hasFile('file') && blank($validated['drive_url'] ?? null)) {
             return back()->withErrors([
-                'file' => 'Upload a file or paste a Google Drive link.',
+                'file' => DurableStorage::requiresDriveInProduction()
+                    ? 'Paste a Google Drive share link (Anyone with the link).'
+                    : 'Upload a file or paste a Google Drive link.',
             ])->withInput();
         }
 
@@ -109,7 +117,7 @@ class PaperController extends Controller
             'title' => $title,
             'group_name' => $validated['group_name'] ?? null,
             'tags' => $tags,
-            'due_at' => $validated['due_at'] ?? null,
+            'due_at' => null,
             'status' => PaperStatus::Submitted,
             'file_path' => $file ? $file->store('', 'papers') : '',
             'original_filename' => $file?->getClientOriginalName() ?: ($drive?->label() ?? 'Google Drive'),
@@ -157,10 +165,10 @@ class PaperController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'group_name' => ['nullable', 'string', 'max:255'],
             'tags' => ['nullable', 'string', 'max:255'],
-            'due_at' => ['nullable', 'date'],
         ];
 
         if ($request->user()->isTeacher()) {
+            $rules['due_at'] = ['nullable', 'date'];
             $rules['score'] = ['nullable', 'integer', 'min:0', 'max:100'];
             $rules['remarks'] = ['nullable', 'string', 'max:2000'];
         }
@@ -181,9 +189,17 @@ class PaperController extends Controller
             'drive_url' => ['nullable', 'url', 'max:500'],
         ]);
 
+        if ($request->hasFile('file') && DurableStorage::requiresDriveInProduction()) {
+            return back()->withErrors([
+                'file' => 'Computer uploads are disabled on this host. Use a Google Drive share link instead.',
+            ]);
+        }
+
         if (! $request->hasFile('file') && blank($validated['drive_url'] ?? null)) {
             return back()->withErrors([
-                'file' => 'Upload a new file or paste a Google Drive link.',
+                'file' => DurableStorage::requiresDriveInProduction()
+                    ? 'Paste a Google Drive share link.'
+                    : 'Upload a new file or paste a Google Drive link.',
             ]);
         }
 

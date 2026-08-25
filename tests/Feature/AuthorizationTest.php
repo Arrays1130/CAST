@@ -60,15 +60,81 @@ class AuthorizationTest extends TestCase
         $this->get(route('papers.show', $paper))->assertRedirect(route('login'));
     }
 
-    public function test_teacher_can_promote_student(): void
+    public function test_teacher_can_promote_verified_student_with_password(): void
     {
         $teacher = User::factory()->create(['role' => 'teacher']);
         $student = User::factory()->create(['role' => 'student', 'email' => 'to-promote@example.com']);
 
         $this->actingAs($teacher)
-            ->post(route('teachers.promote'), ['email' => 'to-promote@example.com'])
+            ->post(route('teachers.promote'), [
+                'email' => 'to-promote@example.com',
+                'password' => 'password',
+            ])
             ->assertRedirect();
 
         $this->assertSame('teacher', $student->fresh()->role);
+    }
+
+    public function test_teacher_cannot_promote_unverified_student(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->unverified()->create([
+            'role' => 'student',
+            'email' => 'pending@example.com',
+        ]);
+
+        $this->actingAs($teacher)
+            ->from(route('profile.edit'))
+            ->post(route('teachers.promote'), [
+                'email' => 'pending@example.com',
+                'password' => 'password',
+            ])
+            ->assertSessionHasErrors('email');
+
+        $this->assertSame('student', $student->fresh()->role);
+    }
+
+    public function test_student_cannot_open_students_roster(): void
+    {
+        $student = User::factory()->create(['role' => 'student']);
+
+        $this->actingAs($student)->get(route('students.index'))->assertForbidden();
+    }
+
+    public function test_teacher_can_view_students_roster(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        User::factory()->create(['role' => 'student', 'name' => 'Ana Capstone', 'email' => 'ana@school.test']);
+
+        $this->actingAs($teacher)
+            ->get(route('students.index'))
+            ->assertOk()
+            ->assertSee('Ana Capstone')
+            ->assertSee('ana@school.test');
+    }
+
+    public function test_student_cannot_change_due_date(): void
+    {
+        $student = User::factory()->create(['role' => 'student']);
+        $paper = Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Chapter 1',
+            'status' => 'submitted',
+            'file_path' => '',
+            'original_filename' => '',
+            'due_at' => now()->addWeek(),
+            'submitted_at' => now(),
+        ]);
+
+        $originalDue = $paper->due_at->toDateString();
+
+        $this->actingAs($student)
+            ->put(route('papers.update', $paper), [
+                'title' => 'Chapter 1',
+                'due_at' => now()->subWeek()->toDateString(),
+            ])
+            ->assertRedirect();
+
+        $this->assertSame($originalDue, $paper->fresh()->due_at->toDateString());
     }
 }

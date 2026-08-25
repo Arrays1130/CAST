@@ -19,6 +19,9 @@
                 ['label' => 'Updates', 'hint' => 'Inbox', 'href' => route('notices.index')],
                 ['label' => 'Settings', 'hint' => 'Account', 'href' => route('profile.edit')],
             ];
+            if (auth()->user()->isTeacher()) {
+                $palette[] = ['label' => 'Students', 'hint' => 'Roster', 'href' => route('students.index')];
+            }
             if (auth()->user()->isStudent()) {
                 $palette[] = ['label' => 'New paper', 'hint' => 'Submit manuscript', 'href' => route('papers.create')];
             }
@@ -49,6 +52,12 @@
                         <span class="grid h-7 w-7 place-items-center rounded-lg bg-white/10 text-xs">▣</span>
                         Papers
                     </a>
+                    @if(auth()->user()->isTeacher())
+                        <a href="{{ route('students.index') }}" class="nav-item {{ request()->routeIs('students.*') ? 'nav-item-active' : '' }}">
+                            <span class="grid h-7 w-7 place-items-center rounded-lg bg-white/10 text-xs">◎</span>
+                            Students
+                        </a>
+                    @endif
                     <a href="{{ route('notices.index') }}" class="nav-item {{ request()->routeIs('notices.*') ? 'nav-item-active' : '' }}">
                         <span class="grid h-7 w-7 place-items-center rounded-lg bg-white/10 text-xs">◉</span>
                         Updates

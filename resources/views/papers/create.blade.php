@@ -2,7 +2,7 @@
     <div
         class="fixed inset-0 z-40 flex items-end justify-center bg-ink/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
         x-data="uploadModal({
-            source: '{{ old('drive_url') ? 'drive' : (app()->isProduction() ? 'drive' : 'file') }}',
+            source: '{{ old('drive_url') || \App\Support\DurableStorage::requiresDriveInProduction() ? 'drive' : (app()->isProduction() ? 'drive' : 'file') }}',
             title: {{ \Illuminate\Support\Js::from(old('title', '')) }},
             driveUrl: {{ \Illuminate\Support\Js::from(old('drive_url', '')) }},
         })"
@@ -28,16 +28,21 @@
                 </div>
 
                 <div class="flex gap-1 rounded-full bg-paper p-1 text-xs">
-                    <button type="button" @click="source = 'file'" class="flex-1 rounded-full py-1.5" :class="source === 'file' ? 'bg-white font-medium shadow-sm' : 'text-notion-muted'">Computer</button>
+                    @unless(\App\Support\DurableStorage::requiresDriveInProduction())
+                        <button type="button" @click="source = 'file'" class="flex-1 rounded-full py-1.5" :class="source === 'file' ? 'bg-white font-medium shadow-sm' : 'text-notion-muted'">Computer</button>
+                    @endunless
                     <button type="button" @click="openGoogleDrive()" class="flex-1 rounded-full py-1.5" :class="source === 'drive' ? 'bg-white font-medium shadow-sm' : 'text-notion-muted'">Google Drive</button>
                 </div>
 
-                @if(app()->isProduction())
-                    <p class="rounded-xl bg-[#fff6ed] px-3 py-2 text-xs text-[#9a3412]">Online tip: <span class="font-semibold">Google Drive</span> is best for review. PDF uploads can be viewed in CAST; Word files need Download. Computer files on the free host can disappear after restarts.</p>
+                @if(\App\Support\DurableStorage::requiresDriveInProduction())
+                    <p class="rounded-xl bg-[#fff6ed] px-3 py-2 text-xs text-[#9a3412]">Online host: use <span class="font-semibold">Google Drive</span> only. Computer uploads are blocked because Free-tier disk wipes files after restarts.</p>
+                @elseif(app()->isProduction())
+                    <p class="rounded-xl bg-[#fff6ed] px-3 py-2 text-xs text-[#9a3412]">Online tip: <span class="font-semibold">Google Drive</span> is best for review. PDF uploads can be viewed in CAST; Word files need Download.</p>
                 @else
                     <p class="rounded-xl bg-[#f4f0ff] px-3 py-2 text-xs text-[#5b21b6]">PDF uploads can be <span class="font-semibold">viewed</span> in CAST. Word files are download-only — use Drive for in-app preview.</p>
                 @endif
 
+                @unless(\App\Support\DurableStorage::requiresDriveInProduction())
                 <div x-show="source === 'file'">
                     <label class="drop-zone" :class="over ? 'is-over' : ''"
                         @dragover.prevent="over = true"
@@ -51,6 +56,7 @@
                     </label>
                     <x-input-error :messages="$errors->get('file')" class="mt-2" />
                 </div>
+                @endunless
 
                 <div x-show="source === 'drive'" x-cloak class="space-y-3">
                     <p class="text-sm text-notion-muted">Pick the file in Drive, set share to <span class="font-medium text-ink">Anyone with the link</span>, then paste the link.</p>
@@ -73,7 +79,6 @@
                     <div class="mt-3 space-y-3">
                         <x-text-input name="group_name" :value="old('group_name')" placeholder="Group name" />
                         <x-text-input name="tags" :value="old('tags')" placeholder="Tags (chapter 1, draft)" />
-                        <input type="date" name="due_at" value="{{ old('due_at') }}" class="field">
                     </div>
                 </details>
             </div>

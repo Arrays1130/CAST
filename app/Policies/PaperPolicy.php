@@ -34,7 +34,7 @@ class PaperPolicy
 
     public function archive(User $user, Paper $paper): bool
     {
-        return $this->view($user, $paper);
+        return $user->isTeacher();
     }
 
     public function comment(User $user, Paper $paper): bool

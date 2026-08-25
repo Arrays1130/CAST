@@ -48,6 +48,12 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        if ($user->papers()->exists()) {
+            return back()->withErrors([
+                'password' => 'This account still has papers. Ask an adviser to clear them first — deleting would wipe the academic trail.',
+            ], 'userDeletion');
+        }
+
         Auth::logout();
 
         $user->delete();

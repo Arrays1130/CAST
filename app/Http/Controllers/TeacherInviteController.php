@@ -15,12 +15,23 @@ class TeacherInviteController extends Controller
 
         $validated = $request->validate([
             'email' => ['required', 'email', Rule::exists('users', 'email')],
+            'password' => ['required', 'current_password'],
         ]);
 
         $user = User::query()->where('email', $validated['email'])->firstOrFail();
 
+        if ($user->id === $request->user()->id) {
+            return back()->withErrors(['email' => 'You are already an adviser.']);
+        }
+
         if ($user->isTeacher()) {
             return back()->with('status', $user->name.' is already an adviser.');
+        }
+
+        if ($user->email_verified_at === null) {
+            return back()->withErrors([
+                'email' => $user->name.' must verify their email before becoming an adviser.',
+            ]);
         }
 
         $user->update(['role' => 'teacher']);

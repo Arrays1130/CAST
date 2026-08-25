@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Support\MailGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -52,6 +53,14 @@ class PasswordResetLinkController extends Controller
             $status = Password::sendResetLink(
                 $request->only('email')
             );
+
+            $account = User::query()->where('email', $request->string('email')->toString())->first();
+            if ($account) {
+                $request->session()->put(
+                    'password_reset_portal',
+                    $account->isTeacher() ? 'adviser' : 'student'
+                );
+            }
         } catch (Throwable $e) {
             report($e);
 

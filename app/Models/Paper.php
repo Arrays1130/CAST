@@ -6,6 +6,7 @@ use App\Enums\PaperStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Paper extends Model
 {
@@ -82,7 +83,15 @@ class Paper extends Model
 
     public function hasLocalFile(): bool
     {
-        return filled($this->file_path);
+        if (! filled($this->file_path)) {
+            return false;
+        }
+
+        try {
+            return Storage::disk('papers')->exists($this->file_path);
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     public function isPdf(): bool

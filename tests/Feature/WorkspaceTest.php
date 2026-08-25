@@ -75,7 +75,7 @@ class WorkspaceTest extends TestCase
             ->assertHeader('content-disposition');
     }
 
-    public function test_owner_can_archive_a_paper(): void
+    public function test_owner_cannot_archive_a_paper(): void
     {
         $student = User::factory()->create(['role' => 'student']);
         $paper = Paper::create([
@@ -88,6 +88,26 @@ class WorkspaceTest extends TestCase
         ]);
 
         $this->actingAs($student)
+            ->post(route('papers.archive', $paper))
+            ->assertForbidden();
+
+        $this->assertNull($paper->fresh()->archived_at);
+    }
+
+    public function test_teacher_can_archive_a_paper(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $student = User::factory()->create(['role' => 'student']);
+        $paper = Paper::create([
+            'user_id' => $student->id,
+            'title' => 'Old draft',
+            'status' => 'submitted',
+            'file_path' => 'old.pdf',
+            'original_filename' => 'old.pdf',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($teacher)
             ->post(route('papers.archive', $paper))
             ->assertRedirect(route('papers.index', ['archived' => 1]));
 

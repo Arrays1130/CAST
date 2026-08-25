@@ -79,6 +79,27 @@ class ProfileTest extends TestCase
         $this->assertNull($user->fresh());
     }
 
+    public function test_user_cannot_delete_account_with_papers(): void
+    {
+        $user = User::factory()->create(['role' => 'student']);
+        \App\Models\Paper::create([
+            'user_id' => $user->id,
+            'title' => 'Keep me',
+            'status' => 'submitted',
+            'file_path' => '',
+            'original_filename' => '',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->from('/profile')
+            ->delete('/profile', ['password' => 'password'])
+            ->assertSessionHasErrorsIn('userDeletion', 'password')
+            ->assertRedirect('/profile');
+
+        $this->assertNotNull($user->fresh());
+    }
+
     public function test_correct_password_must_be_provided_to_delete_account(): void
     {
         $user = User::factory()->create();

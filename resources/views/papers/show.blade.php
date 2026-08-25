@@ -2,10 +2,12 @@
     <div class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <div class="flex items-center justify-between">
             <a href="{{ route('papers.index') }}" class="text-sm text-notion-faint hover:text-notion-text">← Papers</a>
-            <form method="POST" action="{{ route('papers.archive', $paper) }}">
-                @csrf
-                <button class="btn-secondary">{{ $paper->isArchived() ? 'Restore' : 'Archive' }}</button>
-            </form>
+            @if(auth()->user()->isTeacher())
+                <form method="POST" action="{{ route('papers.archive', $paper) }}">
+                    @csrf
+                    <button class="btn-secondary">{{ $paper->isArchived() ? 'Restore' : 'Archive' }}</button>
+                </form>
+            @endif
         </div>
 
         @if($paper->isArchived())
@@ -45,7 +47,11 @@
                 </div>
                 <div class="prop-row">
                     <div class="text-notion-faint">Due</div>
-                    <input type="date" name="due_at" value="{{ old('due_at', optional($paper->due_at)->format('Y-m-d')) }}" class="field !mt-0 border-0 bg-transparent px-0 shadow-none focus:ring-0">
+                    @if(auth()->user()->isTeacher())
+                        <input type="date" name="due_at" value="{{ old('due_at', optional($paper->due_at)->format('Y-m-d')) }}" class="field !mt-0 border-0 bg-transparent px-0 shadow-none focus:ring-0">
+                    @else
+                        <div>{{ optional($paper->due_at)->format('F j, Y') ?: 'Not set' }}</div>
+                    @endif
                 </div>
                 <div class="prop-row">
                     <div class="text-notion-faint">Files</div>
@@ -213,10 +219,15 @@
             <div class="surface mt-8 p-5">
                 <h2 class="font-display text-2xl">New version</h2>
                 <p class="mt-1 text-sm text-notion-muted">The current file is kept in version history.</p>
+                @if(\App\Support\DurableStorage::requiresDriveInProduction())
+                    <p class="mt-3 rounded-xl bg-[#fff6ed] px-3 py-2 text-xs text-[#9a3412]">Computer uploads are disabled on this host. Paste a Google Drive share link.</p>
+                @endif
                 <form method="POST" action="{{ route('papers.file.update', $paper) }}" enctype="multipart/form-data" class="mt-4 space-y-3">
                     @csrf
                     @method('PUT')
-                    <input type="file" name="file" accept=".pdf,.doc,.docx,application/pdf" class="field">
+                    @unless(\App\Support\DurableStorage::requiresDriveInProduction())
+                        <input type="file" name="file" accept=".pdf,.doc,.docx,application/pdf" class="field">
+                    @endunless
                     <x-text-input name="drive_url" :value="old('drive_url', $paper->drive_url)" placeholder="Google Drive link" />
                     @if($paper->drive())
                         <a href="{{ $paper->drive()->openUrl() }}" target="_blank" rel="noopener" class="inline-block text-sm font-medium text-ember hover:underline">Open current Drive file</a>

@@ -4,6 +4,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherInviteController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/updates/read-all', [NoticeController::class, 'markAllRead'])->name('notices.read-all');
     Route::post('/updates/{notice}', [NoticeController::class, 'markRead'])->name('notices.read');
 
+    Route::get('/students', [StudentController::class, 'index'])->middleware('teacher')->name('students.index');
     Route::get('/papers', [PaperController::class, 'index'])->name('papers.index');
     Route::get('/papers/export', [PaperController::class, 'export'])->middleware('teacher')->name('papers.export');
     Route::get('/papers/create', [PaperController::class, 'create'])->middleware('student')->name('papers.create');

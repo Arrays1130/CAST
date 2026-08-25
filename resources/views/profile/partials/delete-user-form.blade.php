@@ -5,14 +5,25 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Accounts with papers cannot be deleted — ask an adviser to clear the archive trail first.') }}
         </p>
     </header>
 
-    <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+    @if(auth()->user()->papers()->exists())
+        <p class="rounded-xl bg-[#fff6ed] px-3 py-2 text-sm text-[#9a3412]">
+            This account still has papers, so deletion is blocked to protect the academic record.
+        </p>
+        <x-danger-button type="button" disabled class="opacity-50 cursor-not-allowed">
+            {{ __('Delete Account') }}
+        </x-danger-button>
+    @else
+        <x-danger-button
+            x-data=""
+            x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+        >{{ __('Delete Account') }}</x-danger-button>
+    @endif
+
+    <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
@@ -39,6 +50,7 @@
                 />
 
                 <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
+                <x-input-error :messages="$errors->userDeletion->get('userDeletion')" class="mt-2" />
             </div>
 
             <div class="mt-6 flex justify-end">

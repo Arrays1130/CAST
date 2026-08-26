@@ -11,5 +11,6 @@ return [
         ['name' => 'Joshua', 'email' => 'joshua@ilinkcst.edu.ph'],
         ['name' => 'Zuharto Mangagel', 'email' => 'zuharto_mangagel201309206@ilinkcst.edu.ph'],
         ['name' => 'Norhaida', 'email' => 'norhaida@ilinkcst.edu.ph'],
+        ['name' => 'Eleonor', 'email' => 'eleonor@ilinkcst.edu.ph'],
     ],
 ];

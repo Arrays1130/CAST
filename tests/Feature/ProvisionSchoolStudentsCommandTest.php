@@ -28,6 +28,11 @@ class ProvisionSchoolStudentsCommandTest extends TestCase
             'email' => 'norhaida@ilinkcst.edu.ph',
             'role' => 'student',
         ]);
+        $this->assertDatabaseHas('users', [
+            'email' => 'eleonor@ilinkcst.edu.ph',
+            'role' => 'student',
+            'must_change_password' => true,
+        ]);
 
         $joshua = User::query()->where('email', 'joshua@ilinkcst.edu.ph')->first();
         $this->assertTrue(\Illuminate\Support\Facades\Hash::check('iloveyouILINK', $joshua->password));
@@ -35,6 +40,6 @@ class ProvisionSchoolStudentsCommandTest extends TestCase
         $this->artisan('cast:provision-school-students')
             ->assertSuccessful();
 
-        $this->assertSame(3, User::query()->where('role', 'student')->where('email', 'like', '%@ilinkcst.edu.ph')->count());
+        $this->assertSame(4, User::query()->where('role', 'student')->where('email', 'like', '%@ilinkcst.edu.ph')->count());
     }
 }

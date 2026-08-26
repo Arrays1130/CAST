@@ -43,6 +43,10 @@
         <x-primary-button class="w-full">{{ $cta }}</x-primary-button>
     </form>
 
+    @if ($portal !== 'adviser')
+        <p class="mt-4 text-xs leading-relaxed text-notion-muted">If your adviser created your account, use the temporary password they gave you. CAST will ask you to change it after login.</p>
+    @endif
+
     <div class="mt-6 rounded-xl border border-notion-line bg-white px-3 py-3 text-sm">
         <p class="text-notion-muted">{{ $switchLabel }}</p>
         <a class="mt-1 inline-flex font-medium text-ember" href="{{ route($switchRoute) }}">{{ $switchText }} →</a>

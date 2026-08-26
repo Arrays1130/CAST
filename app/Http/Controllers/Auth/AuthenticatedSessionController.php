@@ -74,6 +74,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()?->must_change_password) {
+            return redirect()->route('password.change');
+        }
+
         return redirect()->intended(route('papers.index', absolute: false));
     }
 

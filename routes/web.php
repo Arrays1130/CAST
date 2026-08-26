@@ -31,6 +31,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/updates/{notice}', [NoticeController::class, 'markRead'])->name('notices.read');
 
     Route::get('/students', [StudentController::class, 'index'])->middleware('teacher')->name('students.index');
+    Route::post('/students', [StudentController::class, 'store'])
+        ->middleware(['teacher', 'throttle:30,1'])
+        ->name('students.store');
+    Route::post('/students/{user}/password', [StudentController::class, 'resetPassword'])
+        ->middleware(['teacher', 'throttle:30,1'])
+        ->name('students.password');
     Route::post('/students/{user}/verify', [StudentController::class, 'verify'])
         ->middleware(['teacher', 'throttle:30,1'])
         ->name('students.verify');

@@ -17,8 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->trustProxies(at: '*');
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->append(\App\Http\Middleware\EnsurePasswordChanged::class);
         $middleware->redirectGuestsTo(fn () => route('login'));
-        $middleware->redirectUsersTo(fn () => route('papers.index'));
+        $middleware->redirectUsersTo(function () {
+            if (auth()->user()?->must_change_password) {
+                return route('password.change');
+            }
+
+            return route('papers.index');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

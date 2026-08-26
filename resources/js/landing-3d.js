@@ -129,11 +129,11 @@ const SCENE_PALETTES = [
 ];
 
 const SCENE_POSES = [
-    { cam: [1.35, 0.62, 9.2], look: [1.55, 0.2, 0], stage: [1.7, 0.1, 0], rotY: -0.48, fov: 32, hero: { x: 0.2, y: 0.22, z: 0.2, rotX: -0.12, rotY: -0.55, rotZ: 0.05, scale: 1.28 } },
-    { cam: [-0.2, 0.05, 6.6], look: [1.0, -0.05, 0.15], stage: [1.0, -0.12, 0.4], rotY: 0.35, fov: 38, hero: { x: 0.65, y: -0.08, z: 0.05, rotX: -0.05, rotY: 0.42, rotZ: -0.04, scale: 1.05 } },
-    { cam: [2.35, 0.85, 8.4], look: [1.55, 0.35, -0.2], stage: [1.9, 0.22, -0.2], rotY: -0.72, fov: 30, hero: { x: -0.2, y: 0.38, z: 0.5, rotX: -0.18, rotY: -0.82, rotZ: 0.08, scale: 1.34 } },
-    { cam: [0.1, 0.42, 5.9], look: [0.9, 0.12, 0], stage: [0.9, 0.28, 0.6], rotY: 0.62, fov: 40, hero: { x: 0.95, y: -0.1, z: -0.3, rotX: 0.02, rotY: 0.55, rotZ: -0.06, scale: 1.12 } },
-    { cam: [1.65, 0.95, 10.1], look: [1.7, 0.45, 0], stage: [1.8, 0.4, 0], rotY: -0.22, fov: 28, hero: { x: 0.08, y: 0.52, z: 0.18, rotX: -0.16, rotY: -0.38, rotZ: 0.03, scale: 1.4 } },
+    { cam: [1.55, 0.55, 7.4], look: [1.7, 0.25, 0], stage: [1.85, 0.05, 0], rotY: -0.42, fov: 34, hero: { x: 0.15, y: 0.18, z: 0.15, rotX: -0.18, rotY: -0.62, rotZ: 0.08, scale: 1.62 } },
+    { cam: [0.05, 0.12, 5.5], look: [1.15, 0.05, 0.1], stage: [1.1, -0.08, 0.35], rotY: 0.4, fov: 40, hero: { x: 0.55, y: -0.02, z: 0.1, rotX: -0.1, rotY: 0.48, rotZ: -0.06, scale: 1.42 } },
+    { cam: [2.5, 0.9, 6.8], look: [1.65, 0.4, -0.15], stage: [2.0, 0.2, -0.15], rotY: -0.78, fov: 32, hero: { x: -0.15, y: 0.32, z: 0.4, rotX: -0.22, rotY: -0.9, rotZ: 0.1, scale: 1.72 } },
+    { cam: [0.25, 0.48, 4.9], look: [1.0, 0.18, 0], stage: [1.0, 0.22, 0.5], rotY: 0.68, fov: 42, hero: { x: 0.85, y: -0.05, z: -0.2, rotX: 0.04, rotY: 0.62, rotZ: -0.08, scale: 1.48 } },
+    { cam: [1.8, 0.85, 8.2], look: [1.85, 0.4, 0], stage: [1.9, 0.35, 0], rotY: -0.28, fov: 30, hero: { x: 0.05, y: 0.42, z: 0.12, rotX: -0.2, rotY: -0.45, rotZ: 0.05, scale: 1.78 } },
 ];
 
 function glowSprite(color, size) {
@@ -158,37 +158,128 @@ function glowSprite(color, size) {
     return sprite;
 }
 
+function easeOutBack(t) {
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
+function makePageEdgeTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    if (! ctx) {
+        return null;
+    }
+    ctx.fillStyle = '#f3eadc';
+    ctx.fillRect(0, 0, 64, 256);
+    for (let y = 0; y < 256; y += 3) {
+        ctx.fillStyle = y % 9 === 0 ? '#d9cfbf' : '#ebe3d4';
+        ctx.fillRect(0, y, 64, 2);
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(1, 4);
+
+    return texture;
+}
+
 function makeHeroPaper(texture, accent) {
-    const geometry = new THREE.BoxGeometry(1.72, 2.42, 0.028);
-    const front = new THREE.MeshPhysicalMaterial({
-        map: texture,
-        roughness: 0.42,
-        metalness: 0.02,
+    const edgeMap = makePageEdgeTexture();
+    const group = new THREE.Group();
+
+    const coverMat = new THREE.MeshPhysicalMaterial({
+        color: 0x2a2733,
+        roughness: 0.55,
+        metalness: 0.08,
         clearcoat: 0.35,
-        clearcoatRoughness: 0.4,
-        emissive: 0xf6f1e8,
-        emissiveIntensity: 0.04,
     });
-    const edge = new THREE.MeshPhysicalMaterial({ color: 0xe8dfd0, roughness: 0.55, metalness: 0.05, clearcoat: 0.2 });
-    const mesh = new THREE.Mesh(geometry, [edge, edge, edge, edge, front, edge]);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
+    const accentStrip = new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color(accent),
+        roughness: 0.4,
+        metalness: 0.12,
+        emissive: new THREE.Color(accent),
+        emissiveIntensity: 0.12,
+    });
+    const pageEdge = new THREE.MeshPhysicalMaterial({
+        map: edgeMap || undefined,
+        color: 0xf0e6d6,
+        roughness: 0.85,
+        metalness: 0.02,
+    });
+    const pageFace = new THREE.MeshPhysicalMaterial({
+        map: texture,
+        roughness: 0.38,
+        metalness: 0.02,
+        clearcoat: 0.28,
+        clearcoatRoughness: 0.45,
+        emissive: 0xf6f1e8,
+        emissiveIntensity: 0.035,
+    });
+    const pageBack = new THREE.MeshPhysicalMaterial({
+        color: 0xf7f1e6,
+        roughness: 0.55,
+        metalness: 0.02,
+    });
+
+    const block = new THREE.Mesh(
+        new THREE.BoxGeometry(2.05, 2.78, 0.28),
+        [pageEdge, accentStrip, pageEdge, pageEdge, pageFace, pageBack],
+    );
+    block.castShadow = true;
+    block.receiveShadow = true;
+    group.add(block);
+
+    const cover = new THREE.Mesh(
+        new THREE.BoxGeometry(2.12, 2.86, 0.045),
+        coverMat,
+    );
+    cover.position.z = -0.155;
+    cover.castShadow = true;
+    group.add(cover);
+
+    const ribbon = new THREE.Mesh(
+        new THREE.BoxGeometry(0.07, 1.1, 0.02),
+        accentStrip,
+    );
+    ribbon.position.set(-0.92, -0.7, 0.16);
+    group.add(ribbon);
+
+    const sheets = [0, 1, 2].map((i) => {
+        const sheet = new THREE.Mesh(
+            new THREE.BoxGeometry(1.98, 2.7, 0.018),
+            [
+                pageEdge,
+                pageEdge,
+                pageEdge,
+                pageEdge,
+                pageFace.clone(),
+                pageBack,
+            ],
+        );
+        sheet.position.set(0.02 * i, 0.01 * i, 0.08 - i * 0.045);
+        sheet.castShadow = true;
+        group.add(sheet);
+
+        return sheet;
+    });
 
     const outline = new THREE.LineSegments(
-        new THREE.EdgesGeometry(geometry, 24),
-        new THREE.LineBasicMaterial({ color: accent, transparent: true, opacity: 0.35 }),
+        new THREE.EdgesGeometry(new THREE.BoxGeometry(2.12, 2.86, 0.32), 18),
+        new THREE.LineBasicMaterial({ color: accent, transparent: true, opacity: 0.28 }),
     );
-    outline.scale.setScalar(1.005);
+    group.add(outline);
 
-    const group = new THREE.Group();
-    group.add(mesh, outline);
-
-    return { group, frontMaterial: front };
+    return { group, sheets, frontMaterial: pageFace };
 }
 
 function makeGhostPaper(texture, scale = 0.5) {
     return new THREE.Mesh(
-        new THREE.BoxGeometry(1.72 * scale, 2.42 * scale, 0.016),
+        new THREE.BoxGeometry(2.05 * scale, 2.78 * scale, 0.08 * scale),
         new THREE.MeshPhysicalMaterial({
             map: texture,
             roughness: 0.55,
@@ -271,11 +362,11 @@ export function mountLandingScene(canvas) {
 
     const textures = SCENE_TEXTURES.map((def) => makePaperTexture(def));
     const heroes = textures.map((tex, i) => {
-        const { group } = makeHeroPaper(tex, SCENE_TEXTURES[i].accent);
+        const { group, sheets } = makeHeroPaper(tex, SCENE_TEXTURES[i].accent);
         group.visible = false;
         stage.add(group);
 
-        return { mesh: group };
+        return { mesh: group, sheets };
     });
     heroes[0].mesh.visible = true;
 
@@ -413,6 +504,7 @@ export function mountLandingScene(canvas) {
     composer.addPass(bloom);
 
     const mouse = { x: 0.1, y: 0 };
+    const smoothMouse = { x: 0.1, y: 0 };
     const onMove = (event) => {
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -((event.clientY / window.innerHeight) * 2 - 1);
@@ -458,16 +550,20 @@ export function mountLandingScene(canvas) {
         lastTime = time;
 
         const scrollY = window.scrollY;
-        scrollVelocity = damp(scrollVelocity, (scrollY - lastScroll) * 0.04, 8, dt);
+        scrollVelocity = damp(scrollVelocity, (scrollY - lastScroll) * 0.055, 10, dt);
         lastScroll = scrollY;
+
+        smoothMouse.x = damp(smoothMouse.x, mouse.x, 4.2, dt);
+        smoothMouse.y = damp(smoothMouse.y, mouse.y, 4.2, dt);
 
         const scrollProgress = readScrollProgress();
         const targetFloat = progressToSceneFloat(scrollProgress);
-        sceneFloat = damp(sceneFloat, targetFloat, 4.2, dt);
+        sceneFloat = damp(sceneFloat, targetFloat, 5.2, dt);
 
         const indexA = Math.floor(sceneFloat);
         const indexB = Math.min(SCENE_COUNT - 1, indexA + 1);
-        const blend = easeInOutCubic(sceneFloat - indexA);
+        const rawBlend = sceneFloat - indexA;
+        const blend = easeInOutCubic(rawBlend);
         const poseA = SCENE_POSES[indexA];
         const poseB = SCENE_POSES[indexB];
         const palA = SCENE_PALETTES[indexA];
@@ -505,8 +601,9 @@ export function mountLandingScene(canvas) {
                 }
                 const mats = Array.isArray(child.material) ? child.material : [child.material];
                 mats.forEach((mat) => {
-                    mat.transparent = opacity < 1;
+                    mat.transparent = opacity < 0.98;
                     mat.opacity = opacity;
+                    mat.depthWrite = opacity > 0.35;
                 });
             });
         });
@@ -516,19 +613,19 @@ export function mountLandingScene(canvas) {
             ghost.visible = active;
             let opacity = 0;
             if (i === indexA) {
-                opacity = (1 - blend) * 0.2;
+                opacity = (1 - blend) * 0.18;
             }
             if (i === indexB) {
-                opacity = blend * 0.2;
+                opacity = blend * 0.18;
             }
             ghost.material.opacity = opacity;
-            const orbit = t * 0.18 + i * 1.35;
+            const orbit = t * 0.28 + i * 1.35;
             ghost.position.set(
-                Math.sin(orbit) * 3.6 - 0.15,
-                0.5 + Math.cos(orbit * 0.65) * 0.55,
-                Math.cos(orbit) * 1.7 - 2.4,
+                Math.sin(orbit) * 4.1 - 0.2,
+                0.55 + Math.cos(orbit * 0.8) * 0.75,
+                Math.cos(orbit) * 2.1 - 2.6,
             );
-            ghost.rotation.set(-0.18, orbit * 0.28, 0.08);
+            ghost.rotation.set(-0.22 + Math.sin(t * 0.5 + i) * 0.1, orbit * 0.4, 0.12);
         });
 
         const heroPose = {
@@ -540,87 +637,120 @@ export function mountLandingScene(canvas) {
             rotZ: lerp(poseA.hero.rotZ, poseB.hero.rotZ, blend),
             scale: lerp(poseA.hero.scale, poseB.hero.scale, blend),
         };
-        const floatY = Math.sin(t * 0.85) * 0.12;
-        const scrollPulse = easeOutExpo(Math.min(1, Math.abs(scrollVelocity) * 2)) * 0.06;
+        const floatY = Math.sin(t * 0.95) * 0.16 + Math.sin(t * 0.37) * 0.05;
+        const floatX = Math.sin(t * 0.48) * 0.08;
+        const idleYaw = Math.sin(t * 0.42) * 0.14;
+        const idlePitch = Math.cos(t * 0.55) * 0.07;
+        const idleRoll = Math.sin(t * 0.33) * 0.04;
+        const scrollAmt = Math.min(1, Math.abs(scrollVelocity) * 2.4);
+        const scrollPulse = easeOutExpo(scrollAmt) * 0.1;
+        const scrollKick = easeOutBack(scrollAmt) * 0.18;
 
         heroes.forEach((hero, i) => {
             if (i !== indexA && i !== indexB) {
                 return;
             }
             const transitionOffset = i === indexA ? -blend : 1 - blend;
-            const flip = Math.sin(transitionOffset * Math.PI) * 0.55;
+            const turn = Math.sin(Math.abs(transitionOffset) * Math.PI);
+            const pageFlip = turn * (i === indexA ? -1.35 : 1.35);
+            const lift = turn * 0.55;
+
             hero.mesh.position.set(
-                heroPose.x + transitionOffset * 0.55,
-                heroPose.y + floatY + Math.abs(transitionOffset) * 0.15,
-                heroPose.z - Math.abs(transitionOffset) * 0.45,
+                heroPose.x + floatX + transitionOffset * 0.85 + smoothMouse.x * 0.12,
+                heroPose.y + floatY + Math.abs(transitionOffset) * 0.35 + lift * 0.15,
+                heroPose.z - Math.abs(transitionOffset) * 0.7 - scrollKick * 0.25,
             );
             hero.mesh.rotation.set(
-                heroPose.rotX + flip * 0.35 + Math.sin(t * 0.4) * 0.04,
-                heroPose.rotY + Math.sin(t * 0.35) * 0.07 + transitionOffset * 0.55,
-                heroPose.rotZ + transitionOffset * 0.08,
+                heroPose.rotX + idlePitch + pageFlip * 0.22 + smoothMouse.y * 0.1 + scrollVelocity * 0.35,
+                heroPose.rotY + idleYaw + pageFlip * 0.95 + transitionOffset * 0.35 + smoothMouse.x * 0.22,
+                heroPose.rotZ + idleRoll + transitionOffset * 0.12 + scrollVelocity * 0.15,
             );
-            hero.mesh.scale.setScalar(heroPose.scale + scrollPulse - Math.abs(transitionOffset) * 0.08);
+            hero.mesh.scale.setScalar(heroPose.scale + scrollPulse - Math.abs(transitionOffset) * 0.12);
+
+            (hero.sheets || []).forEach((sheet, sheetIndex) => {
+                const peel = Math.max(0, turn - sheetIndex * 0.18);
+                const hinge = peel * peel * (i === indexA ? -1.55 : 1.55);
+                sheet.rotation.y = hinge;
+                sheet.position.x = 0.02 * sheetIndex + Math.sin(Math.abs(hinge) * 0.55) * 0.28;
+                sheet.position.z = 0.08 - sheetIndex * 0.045 + peel * 0.12;
+                sheet.rotation.x = -peel * 0.08;
+            });
         });
 
         const cam = lerp3(poseA.cam, poseB.cam, blend);
         const look = lerp3(poseA.look, poseB.look, blend);
         const stagePos = lerp3(poseA.stage, poseB.stage, blend);
         const stageRotY = lerp(poseA.rotY, poseB.rotY, blend);
-        const targetFov = lerp(poseA.fov, poseB.fov, blend) + Math.abs(scrollVelocity) * 4;
+        const targetFov = lerp(poseA.fov, poseB.fov, blend) + Math.abs(scrollVelocity) * 7 + Math.sin(blend * Math.PI) * 3.5;
 
-        stage.position.set(stagePos[0], stagePos[1], stagePos[2]);
-        stage.rotation.y = damp(stage.rotation.y, stageRotY + mouse.x * 0.38, 5.5, dt);
-        stage.rotation.x = damp(stage.rotation.x, mouse.y * 0.16 + scrollVelocity * 0.08, 5.5, dt);
+        stage.position.set(stagePos[0], stagePos[1] + Math.sin(t * 0.6) * 0.03, stagePos[2]);
+        stage.rotation.y = damp(stage.rotation.y, stageRotY + smoothMouse.x * 0.55, 6.5, dt);
+        stage.rotation.x = damp(stage.rotation.x, smoothMouse.y * 0.22 + scrollVelocity * 0.14, 6.5, dt);
+        stage.rotation.z = damp(stage.rotation.z, smoothMouse.x * -0.04, 5, dt);
 
-        camera.position.x = damp(camera.position.x, cam[0] + mouse.x * 0.5, 4.8, dt);
-        camera.position.y = damp(camera.position.y, cam[1] + mouse.y * 0.28, 4.8, dt);
-        camera.position.z = damp(camera.position.z, cam[2], 4.8, dt);
-        camera.fov = damp(camera.fov, targetFov, 4.2, dt);
+        camera.position.x = damp(camera.position.x, cam[0] + smoothMouse.x * 0.75, 5.6, dt);
+        camera.position.y = damp(camera.position.y, cam[1] + smoothMouse.y * 0.4, 5.6, dt);
+        camera.position.z = damp(camera.position.z, cam[2] - scrollKick * 0.9, 5.6, dt);
+        camera.fov = damp(camera.fov, targetFov, 5.2, dt);
         camera.updateProjectionMatrix();
-        camera.lookAt(look[0], look[1], look[2]);
+        camera.lookAt(
+            look[0] + smoothMouse.x * 0.15,
+            look[1] + smoothMouse.y * 0.1,
+            look[2],
+        );
 
-        badge.position.set(heroPose.x + 1.2, heroPose.y + 1.1 + Math.sin(t * 1.1) * 0.2, heroPose.z + 0.7);
+        badge.position.set(
+            heroPose.x + 1.45,
+            heroPose.y + 1.25 + Math.sin(t * 1.25) * 0.28,
+            heroPose.z + 0.85,
+        );
         badge.material.emissive.copy(palette.ember);
         if (emberGlow) {
             emberGlow.position.copy(badge.position);
             emberGlow.material.color.copy(palette.ember);
         }
 
-        crystal.position.set(heroPose.x - 1.55, heroPose.y + 0.9 + Math.sin(t * 0.9) * 0.2, heroPose.z + 0.35);
-        crystal.rotation.set(t * 0.55, t * 0.72, t * 0.25);
+        crystal.position.set(
+            heroPose.x - 1.85,
+            heroPose.y + 1.05 + Math.sin(t * 1.05) * 0.28,
+            heroPose.z + 0.45,
+        );
+        crystal.rotation.set(t * 0.75, t * 0.95, t * 0.35);
 
         rings.forEach((ring, i) => {
-            ring.position.set(heroPose.x - 1.4 + i * 0.1, heroPose.y + 0.65, heroPose.z + 0.2);
-            ring.rotation.z = t * (0.32 + i * 0.14);
+            ring.position.set(heroPose.x - 1.65 + i * 0.12, heroPose.y + 0.75, heroPose.z + 0.25);
+            ring.rotation.z = t * (0.48 + i * 0.22);
+            ring.rotation.x = Math.PI / 2.15 + i * 0.1 + Math.sin(t * 0.4) * 0.08;
             ring.material.emissive.copy(palette.cyan);
             ring.material.color.copy(palette.cyan);
         });
 
-        const angleA = t * 0.14;
-        glassA.position.set(heroPose.x + Math.sin(angleA) * 2.15, heroPose.y + 0.2, heroPose.z + Math.cos(angleA) * 1.0 - 0.4);
-        glassA.rotation.set(-0.28, angleA, 0.1);
+        const angleA = t * 0.22;
+        glassA.position.set(heroPose.x + Math.sin(angleA) * 2.45, heroPose.y + 0.25, heroPose.z + Math.cos(angleA) * 1.2 - 0.35);
+        glassA.rotation.set(-0.32, angleA * 1.2, 0.12);
         glassA.material.color.copy(palette.cyan);
 
-        const angleB = t * 0.14 + Math.PI;
-        glassB.position.set(heroPose.x + Math.sin(angleB) * 2.3, heroPose.y + 0.7, heroPose.z + Math.cos(angleB) * 1.05 - 0.4);
-        glassB.rotation.set(-0.22, angleB, 0.08);
+        const angleB = t * 0.22 + Math.PI;
+        glassB.position.set(heroPose.x + Math.sin(angleB) * 2.6, heroPose.y + 0.85, heroPose.z + Math.cos(angleB) * 1.25 - 0.35);
+        glassB.rotation.set(-0.26, angleB * 1.15, 0.1);
         glassB.material.color.copy(palette.accent);
 
         if (orbA) {
-            orbA.position.set(-3.8 + mouse.x * 0.4, 2.4 + mouse.y * 0.4, -4.2);
+            orbA.position.set(-3.8 + smoothMouse.x * 0.7, 2.4 + smoothMouse.y * 0.55, -4.2);
             orbA.material.color.copy(palette.ember);
         }
         if (orbB) {
-            orbB.position.set(5.2 + mouse.x * 0.3, -0.6, -3.2);
+            orbB.position.set(5.2 + smoothMouse.x * 0.5, -0.6 + Math.sin(t * 0.5) * 0.3, -3.2);
             orbB.material.color.copy(palette.cyan);
         }
         if (orbC) {
-            orbC.position.set(1.2, 3.8, -5.2);
+            orbC.position.set(1.2, 3.8 + Math.cos(t * 0.4) * 0.25, -5.2);
             orbC.material.color.copy(palette.accent);
         }
 
-        dust.rotation.y = t * 0.035;
-        grid.rotation.y = t * 0.012;
+        dust.rotation.y = t * 0.055;
+        dust.rotation.x = Math.sin(t * 0.2) * 0.04;
+        grid.rotation.y = t * 0.02;
 
         const activeIndex = blend > 0.5 ? indexB : indexA;
         sections.forEach((section, i) => {

@@ -70,6 +70,8 @@ fi
 php artisan config:clear
 php artisan migrate --force
 
+php artisan cast:provision-school-students
+
 # Never seed known demo passwords on production unless SEED_DEMO=true
 if [ "${SEED_DEMO}" = "true" ] || [ "${APP_ENV}" = "local" ]; then
     php artisan db:seed --force

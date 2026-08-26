@@ -43,21 +43,24 @@ function makePaperTexture({ title, status, statusBg, statusFg, accent, subtitle,
     }
 
     const bg = ctx.createLinearGradient(0, 0, 768, 1080);
-    bg.addColorStop(0, '#141821');
-    bg.addColorStop(0.5, '#0b0d13');
-    bg.addColorStop(1, '#05060a');
+    bg.addColorStop(0, '#fffaf2');
+    bg.addColorStop(0.45, '#f6f1e8');
+    bg.addColorStop(1, '#efe8db');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, 768, 1080);
 
-    ctx.globalAlpha = 0.06;
-    for (let y = 0; y < 1080; y += 24) {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, y, 768, 1);
+    ctx.globalAlpha = 0.18;
+    for (let y = 248; y < 920; y += 36) {
+        ctx.fillStyle = '#c9bfb0';
+        ctx.fillRect(48, y, 672, 1);
     }
     ctx.globalAlpha = 1;
 
+    ctx.fillStyle = 'rgba(255, 90, 60, 0.08)';
+    ctx.fillRect(0, 0, 36, 1080);
+
     const glow = ctx.createRadialGradient(640, 160, 10, 640, 160, 360);
-    glow.addColorStop(0, `${accent}66`);
+    glow.addColorStop(0, `${accent}33`);
     glow.addColorStop(1, 'transparent');
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, 768, 1080);
@@ -66,7 +69,7 @@ function makePaperTexture({ title, status, statusBg, statusFg, accent, subtitle,
     ctx.fillRect(0, 0, 5, 1080);
     ctx.fillRect(0, 0, 768, 3);
 
-    ctx.fillStyle = '#f7f4ef';
+    ctx.fillStyle = '#12141a';
     ctx.font = '700 56px "Syne", Georgia, serif';
     ctx.fillText(title, 48, 150);
     ctx.fillStyle = accent;
@@ -74,22 +77,22 @@ function makePaperTexture({ title, status, statusBg, statusFg, accent, subtitle,
     ctx.fillText(subtitle || 'CAST · manuscript', 48, 192);
 
     for (let i = 0; i < 15; i += 1) {
-        ctx.fillStyle = i % 3 === 0 ? '#2c3344' : '#232938';
+        ctx.fillStyle = i % 3 === 0 ? 'rgba(18, 20, 26, 0.22)' : 'rgba(18, 20, 26, 0.12)';
         ctx.fillRect(48, 248 + i * 40, 360 + ((i * 89 + variant * 37) % 240), 7);
     }
 
     if (variant % 2 === 0) {
-        ctx.fillStyle = `${accent}18`;
+        ctx.fillStyle = `${accent}14`;
         ctx.strokeStyle = `${accent}55`;
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.roundRect(48, 730, 300, 120, 16);
         ctx.fill();
         ctx.stroke();
-        ctx.fillStyle = '#d6dbe6';
+        ctx.fillStyle = '#12141a';
         ctx.font = '600 17px "Outfit", sans-serif';
         ctx.fillText('Reference scan', 68, 770);
-        ctx.fillStyle = '#7b8496';
+        ctx.fillStyle = 'rgba(22, 20, 28, 0.55)';
         ctx.font = '400 14px "Outfit", sans-serif';
         ctx.fillText('3 unused · 1 missing', 68, 800);
     }
@@ -110,19 +113,19 @@ function makePaperTexture({ title, status, statusBg, statusFg, accent, subtitle,
 }
 
 const SCENE_TEXTURES = [
-    { title: 'Chapter 1', status: 'For review', statusBg: '#1e3a4f', statusFg: '#7dd3fc', accent: '#ff5a3c', subtitle: 'Introduction', variant: 0 },
-    { title: 'Proposal', status: 'Submitted', statusBg: '#2e1f4a', statusFg: '#c4b5fd', accent: '#a78bfa', subtitle: 'Upload · Drive', variant: 1 },
-    { title: 'Full draft', status: 'Needs revision', statusBg: '#4a2818', statusFg: '#fdba74', accent: '#fb923c', subtitle: 'Adviser notes', variant: 2 },
-    { title: 'References', status: 'Scanning…', statusBg: '#1a2e4a', statusFg: '#93c5fd', accent: '#38bdf8', subtitle: 'Reference Detective', variant: 3 },
-    { title: 'Defense', status: 'Approved', statusBg: '#14332a', statusFg: '#6ee7b7', accent: '#34d399', subtitle: 'Ready to ship', variant: 4 },
+    { title: 'Chapter 1', status: 'For review', statusBg: '#d7ecf6', statusFg: '#16384a', accent: '#ff5a3c', subtitle: 'Introduction', variant: 0 },
+    { title: 'Proposal', status: 'Submitted', statusBg: '#ece7de', statusFg: '#3b372f', accent: '#7c3aed', subtitle: 'Upload · Drive', variant: 1 },
+    { title: 'Full draft', status: 'Needs revision', statusBg: '#ffe1cc', statusFg: '#6a3212', accent: '#ea580c', subtitle: 'Adviser notes', variant: 2 },
+    { title: 'References', status: 'Scanning…', statusBg: '#dbeafe', statusFg: '#1e3a5f', accent: '#0284c7', subtitle: 'Reference Detective', variant: 3 },
+    { title: 'Defense', status: 'Approved', statusBg: '#d8f0d8', statusFg: '#1b3d24', accent: '#059669', subtitle: 'Ready to ship', variant: 4 },
 ];
 
 const SCENE_PALETTES = [
-    { fog: 0x05060a, ember: 0xff5a3c, accent: 0xff5a3c, cyan: 0x38bdf8, grid: 0xff5a3c, bloom: 0.48 },
-    { fog: 0x07060f, ember: 0xa78bfa, accent: 0x8b5cf6, cyan: 0xc4b5fd, grid: 0x7c3aed, bloom: 0.52 },
-    { fog: 0x0a0705, ember: 0xfb923c, accent: 0xf97316, cyan: 0xfdba74, grid: 0xfb923c, bloom: 0.5 },
-    { fog: 0x040910, ember: 0x38bdf8, accent: 0x0ea5e9, cyan: 0x7dd3fc, grid: 0x38bdf8, bloom: 0.55 },
-    { fog: 0x040a08, ember: 0x34d399, accent: 0x10b981, cyan: 0x6ee7b7, grid: 0x34d399, bloom: 0.46 },
+    { fog: 0xf6f1e8, ember: 0xff5a3c, accent: 0xff5a3c, cyan: 0x0284c7, grid: 0xff5a3c, bloom: 0.12 },
+    { fog: 0xf6f1e8, ember: 0x7c3aed, accent: 0x7c3aed, cyan: 0xa78bfa, grid: 0x7c3aed, bloom: 0.14 },
+    { fog: 0xf6f1e8, ember: 0xea580c, accent: 0xea580c, cyan: 0xfb923c, grid: 0xea580c, bloom: 0.13 },
+    { fog: 0xf6f1e8, ember: 0x0284c7, accent: 0x0284c7, cyan: 0x38bdf8, grid: 0x0284c7, bloom: 0.15 },
+    { fog: 0xf6f1e8, ember: 0x059669, accent: 0x059669, cyan: 0x34d399, grid: 0x059669, bloom: 0.12 },
 ];
 
 const SCENE_POSES = [
@@ -148,7 +151,7 @@ function glowSprite(color, size) {
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 256);
     const map = new THREE.CanvasTexture(c);
-    const mat = new THREE.SpriteMaterial({ map, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+    const mat = new THREE.SpriteMaterial({ map, transparent: true, depthWrite: false, opacity: 0.7 });
     const sprite = new THREE.Sprite(mat);
     sprite.scale.set(size, size, 1);
 
@@ -159,21 +162,21 @@ function makeHeroPaper(texture, accent) {
     const geometry = new THREE.BoxGeometry(1.72, 2.42, 0.028);
     const front = new THREE.MeshPhysicalMaterial({
         map: texture,
-        roughness: 0.16,
-        metalness: 0.1,
-        clearcoat: 0.8,
-        clearcoatRoughness: 0.18,
-        emissive: 0x10121a,
-        emissiveIntensity: 0.18,
+        roughness: 0.42,
+        metalness: 0.02,
+        clearcoat: 0.35,
+        clearcoatRoughness: 0.4,
+        emissive: 0xf6f1e8,
+        emissiveIntensity: 0.04,
     });
-    const edge = new THREE.MeshPhysicalMaterial({ color: 0x171a24, roughness: 0.3, metalness: 0.6, clearcoat: 0.5 });
+    const edge = new THREE.MeshPhysicalMaterial({ color: 0xe8dfd0, roughness: 0.55, metalness: 0.05, clearcoat: 0.2 });
     const mesh = new THREE.Mesh(geometry, [edge, edge, edge, edge, front, edge]);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
 
     const outline = new THREE.LineSegments(
         new THREE.EdgesGeometry(geometry, 24),
-        new THREE.LineBasicMaterial({ color: accent, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending }),
+        new THREE.LineBasicMaterial({ color: accent, transparent: true, opacity: 0.35 }),
     );
     outline.scale.setScalar(1.005);
 
@@ -188,10 +191,10 @@ function makeGhostPaper(texture, scale = 0.5) {
         new THREE.BoxGeometry(1.72 * scale, 2.42 * scale, 0.016),
         new THREE.MeshPhysicalMaterial({
             map: texture,
-            roughness: 0.45,
-            metalness: 0.08,
+            roughness: 0.55,
+            metalness: 0.02,
             transparent: true,
-            opacity: 0.16,
+            opacity: 0.22,
             depthWrite: false,
         }),
     );
@@ -203,12 +206,12 @@ function makeCrystal(color) {
         new THREE.MeshPhysicalMaterial({
             color,
             emissive: color,
-            emissiveIntensity: 0.55,
-            roughness: 0.08,
-            metalness: 0.7,
-            clearcoat: 1,
+            emissiveIntensity: 0.22,
+            roughness: 0.2,
+            metalness: 0.35,
+            clearcoat: 0.8,
             transparent: true,
-            opacity: 0.9,
+            opacity: 0.78,
         }),
     );
 }
@@ -226,7 +229,7 @@ function makeGrid(size, divisions, color) {
 
     return new THREE.LineSegments(
         geometry,
-        new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.14 }),
+        new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.08 }),
     );
 }
 
@@ -252,15 +255,15 @@ export function mountLandingScene(canvas) {
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
+    renderer.setClearColor(0xf6f1e8, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.32;
+    renderer.toneMappingExposure = 1.05;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(SCENE_PALETTES[0].fog, 0.038);
+    scene.fog = new THREE.FogExp2(SCENE_PALETTES[0].fog, 0.022);
 
     const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 60);
     const stage = new THREE.Group();
@@ -287,12 +290,12 @@ export function mountLandingScene(canvas) {
     const crystal = makeCrystal(0xff5a3c);
     stage.add(crystal);
 
-    const orbA = glowSprite('rgba(255,90,60,0.65)', 6.2);
-    const orbB = glowSprite('rgba(56,189,248,0.5)', 5.0);
-    const orbC = glowSprite('rgba(167,139,250,0.4)', 4.0);
+    const orbA = glowSprite('rgba(255,90,60,0.28)', 5.4);
+    const orbB = glowSprite('rgba(2,132,199,0.22)', 4.4);
+    const orbC = glowSprite('rgba(124,58,237,0.18)', 3.6);
     [orbA, orbB, orbC].forEach((orb) => orb && scene.add(orb));
 
-    const emberGlow = glowSprite('rgba(255,90,60,0.7)', 3.0);
+    const emberGlow = glowSprite('rgba(255,90,60,0.32)', 2.4);
     if (emberGlow) {
         stage.add(emberGlow);
     }
@@ -301,11 +304,11 @@ export function mountLandingScene(canvas) {
         new THREE.SphereGeometry(0.18, 48, 48),
         new THREE.MeshPhysicalMaterial({
             color: 0xff5a3c,
-            emissive: 0xff3b1a,
-            emissiveIntensity: 1.35,
-            roughness: 0.08,
-            metalness: 0.6,
-            clearcoat: 1,
+            emissive: 0xff5a3c,
+            emissiveIntensity: 0.35,
+            roughness: 0.22,
+            metalness: 0.25,
+            clearcoat: 0.7,
         }),
     );
     stage.add(badge);
@@ -314,13 +317,13 @@ export function mountLandingScene(canvas) {
         const ring = new THREE.Mesh(
             new THREE.TorusGeometry(radius, 0.012, 12, 100),
             new THREE.MeshPhysicalMaterial({
-                color: 0x7dd3fc,
-                emissive: 0x38bdf8,
-                emissiveIntensity: 0.9,
-                roughness: 0.12,
-                metalness: 0.8,
+                color: 0x0284c7,
+                emissive: 0x0284c7,
+                emissiveIntensity: 0.25,
+                roughness: 0.28,
+                metalness: 0.35,
                 transparent: true,
-                opacity: 0.42 - i * 0.12,
+                opacity: 0.28 - i * 0.08,
             }),
         );
         ring.rotation.x = Math.PI / 2.15 + i * 0.1;
@@ -332,12 +335,12 @@ export function mountLandingScene(canvas) {
     const glassA = new THREE.Mesh(
         new THREE.PlaneGeometry(1.35, 0.78),
         new THREE.MeshPhysicalMaterial({
-            color: 0x7dd3fc,
+            color: 0x0284c7,
             transparent: true,
-            opacity: 0.1,
-            roughness: 0.04,
-            metalness: 0.15,
-            clearcoat: 1,
+            opacity: 0.06,
+            roughness: 0.12,
+            metalness: 0.08,
+            clearcoat: 0.6,
             side: THREE.DoubleSide,
             depthWrite: false,
         }),
@@ -347,10 +350,10 @@ export function mountLandingScene(canvas) {
         new THREE.MeshPhysicalMaterial({
             color: 0xff5a3c,
             transparent: true,
-            opacity: 0.1,
-            roughness: 0.04,
-            metalness: 0.15,
-            clearcoat: 1,
+            opacity: 0.06,
+            roughness: 0.12,
+            metalness: 0.08,
+            clearcoat: 0.6,
             side: THREE.DoubleSide,
             depthWrite: false,
         }),
@@ -361,7 +364,7 @@ export function mountLandingScene(canvas) {
     grid.position.set(1.5, -1.95, 0);
     scene.add(grid);
 
-    const dustCount = 420;
+    const dustCount = 280;
     const dustPositions = new Float32Array(dustCount * 3);
     for (let i = 0; i < dustCount; i += 1) {
         dustPositions[i * 3] = (Math.random() - 0.3) * 18;
@@ -371,34 +374,33 @@ export function mountLandingScene(canvas) {
     const dust = new THREE.Points(
         new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(dustPositions, 3)),
         new THREE.PointsMaterial({
-            color: 0xffd0c0,
-            size: 0.024,
+            color: 0xc4a484,
+            size: 0.02,
             transparent: true,
-            opacity: 0.3,
+            opacity: 0.22,
             depthWrite: false,
-            blending: THREE.AdditiveBlending,
         }),
     );
     scene.add(dust);
 
-    scene.add(new THREE.AmbientLight(0x6b7280, 0.32));
-    const key = new THREE.DirectionalLight(0xfff1e5, 1.9);
+    scene.add(new THREE.AmbientLight(0xf6f1e8, 0.78));
+    const key = new THREE.DirectionalLight(0xfff8ef, 1.15);
     key.position.set(5.5, 8.5, 6);
     key.castShadow = true;
     scene.add(key);
-    const emberLight = new THREE.PointLight(0xff5a3c, 34, 18, 2);
+    const emberLight = new THREE.PointLight(0xff5a3c, 8, 18, 2);
     emberLight.position.set(-3, 1.8, 2.8);
     scene.add(emberLight);
-    const cyanLight = new THREE.PointLight(0x38bdf8, 24, 15, 2);
+    const cyanLight = new THREE.PointLight(0x0284c7, 6, 15, 2);
     cyanLight.position.set(4, 0, 2.2);
     scene.add(cyanLight);
-    const rimLight = new THREE.PointLight(0xa78bfa, 16, 13, 2);
+    const rimLight = new THREE.PointLight(0x7c3aed, 4, 13, 2);
     rimLight.position.set(0.4, 2.8, -3.2);
     scene.add(rimLight);
 
     const floor = new THREE.Mesh(
         new THREE.CircleGeometry(11, 64),
-        new THREE.MeshStandardMaterial({ color: 0x06080e, roughness: 0.9, metalness: 0.4 }),
+        new THREE.MeshStandardMaterial({ color: 0xefe8db, roughness: 0.92, metalness: 0.02 }),
     );
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(1.5, -1.96, 0);
@@ -407,7 +409,7 @@ export function mountLandingScene(canvas) {
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.48, 0.4, 0.86);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.12, 0.55, 0.92);
     composer.addPass(bloom);
 
     const mouse = { x: 0.1, y: 0 };
@@ -514,10 +516,10 @@ export function mountLandingScene(canvas) {
             ghost.visible = active;
             let opacity = 0;
             if (i === indexA) {
-                opacity = (1 - blend) * 0.12;
+                opacity = (1 - blend) * 0.2;
             }
             if (i === indexB) {
-                opacity = blend * 0.12;
+                opacity = blend * 0.2;
             }
             ghost.material.opacity = opacity;
             const orbit = t * 0.18 + i * 1.35;

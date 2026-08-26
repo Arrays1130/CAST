@@ -27,6 +27,15 @@ class ProvisionSchoolStudentsCommand extends Command
 
             $existing = User::query()->where('email', $email)->first();
             if ($existing) {
+                if ($existing->isStudent() && $existing->must_change_password) {
+                    $existing->update([
+                        'password' => $password,
+                        'email_verified_at' => $existing->email_verified_at ?? now(),
+                    ]);
+                    $this->info('Updated temp password for '.$email);
+                    continue;
+                }
+
                 $skipped++;
                 $this->line('Skip '.$email);
                 continue;

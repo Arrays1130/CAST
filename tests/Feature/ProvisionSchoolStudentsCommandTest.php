@@ -29,6 +29,9 @@ class ProvisionSchoolStudentsCommandTest extends TestCase
             'role' => 'student',
         ]);
 
+        $joshua = User::query()->where('email', 'joshua@ilinkcst.edu.ph')->first();
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('iloveyouILINK', $joshua->password));
+
         $this->artisan('cast:provision-school-students')
             ->assertSuccessful();
 

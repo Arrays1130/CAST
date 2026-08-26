@@ -6,7 +6,8 @@ Students submit papers. Advisers review, comment, score, and approve — online.
 
 Only when `APP_ENV=local` (or `SEED_DEMO=true`):
 
-- Teacher: `sir@cast.test` / `password`
+- Teacher: `briel@ilinkcst.edu.ph` / `iloveyouILINK` (change password on first login)
+- Student: `student@cast.test` / `password`
 - Student: `student@cast.test` / `password`
 
 Production never seeds these accounts unless you explicitly set `SEED_DEMO=true`.

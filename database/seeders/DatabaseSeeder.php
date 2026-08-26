@@ -18,12 +18,13 @@ class DatabaseSeeder extends Seeder
         }
 
         User::query()->firstOrCreate(
-            ['email' => 'sir@cast.test'],
+            ['email' => 'briel@ilinkcst.edu.ph'],
             [
-                'name' => 'Sir',
-                'password' => 'password',
+                'name' => 'Briel',
+                'password' => 'iloveyouILINK',
                 'role' => 'teacher',
                 'email_verified_at' => now(),
+                'must_change_password' => true,
             ]
         );
 

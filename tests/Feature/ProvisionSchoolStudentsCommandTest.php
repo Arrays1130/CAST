@@ -41,5 +41,11 @@ class ProvisionSchoolStudentsCommandTest extends TestCase
             ->assertSuccessful();
 
         $this->assertSame(4, User::query()->where('role', 'student')->where('email', 'like', '%@ilinkcst.edu.ph')->count());
+        $this->assertDatabaseHas('users', [
+            'email' => 'briel@ilinkcst.edu.ph',
+            'name' => 'Briel',
+            'role' => 'teacher',
+            'must_change_password' => true,
+        ]);
     }
 }

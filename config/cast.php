@@ -13,4 +13,8 @@ return [
         ['name' => 'Norhaida', 'email' => 'norhaida@ilinkcst.edu.ph'],
         ['name' => 'Eleonor', 'email' => 'eleonor@ilinkcst.edu.ph'],
     ],
+
+    'provisioned_teachers' => [
+        ['name' => 'Briel', 'email' => 'briel@ilinkcst.edu.ph'],
+    ],
 ];

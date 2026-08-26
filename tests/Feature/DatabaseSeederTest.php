@@ -15,7 +15,7 @@ class DatabaseSeederTest extends TestCase
     {
         $this->seed(DatabaseSeeder::class);
 
-        $this->assertDatabaseHas('users', ['email' => 'sir@cast.test', 'role' => 'teacher']);
+        $this->assertDatabaseHas('users', ['email' => 'briel@ilinkcst.edu.ph', 'role' => 'teacher']);
         $this->assertDatabaseHas('users', ['email' => 'student@cast.test', 'role' => 'student']);
     }
 
@@ -26,7 +26,7 @@ class DatabaseSeederTest extends TestCase
 
         (new DatabaseSeeder)->run();
 
-        $this->assertDatabaseMissing('users', ['email' => 'sir@cast.test']);
+        $this->assertDatabaseMissing('users', ['email' => 'briel@ilinkcst.edu.ph']);
         $this->assertSame(0, User::query()->count());
     }
 
@@ -36,7 +36,7 @@ class DatabaseSeederTest extends TestCase
 
         $this->seed(DatabaseSeeder::class);
 
-        $this->assertDatabaseMissing('users', ['email' => 'sir@cast.test']);
+        $this->assertDatabaseMissing('users', ['email' => 'briel@ilinkcst.edu.ph']);
         $this->assertSame(1, User::query()->count());
     }
 }

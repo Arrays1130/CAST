@@ -4,13 +4,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>CAST · Capstone Assessment Studio</title>
+    <meta name="description" content="Submit, review, and refine every capstone chapter inside one focused workspace — built for students and advisers.">
+    <meta property="og:title" content="CAST · Capstone Assessment Studio">
+    <meta property="og:description" content="Turn drafts into defense-ready work. Submit, review, and refine every capstone chapter in one workspace.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="CAST · Capstone Assessment Studio">
+    <meta name="twitter:description" content="Turn drafts into defense-ready work. Submit, review, and refine every capstone chapter in one workspace.">
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/landing-3d.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/landing.jsx'])
 </head>
 <body class="landing-3d font-sans text-ink">
-    <canvas id="cast-3d" class="landing-canvas" aria-hidden="true"></canvas>
+    @php
+        $flipbookPages = [
+            ['chapter' => 'Chapter 1', 'title' => 'The draft begins.', 'status' => 'Draft', 'note' => 'Shape the problem, scope, and purpose.'],
+            ['chapter' => 'Chapter 2', 'title' => 'Evidence takes form.', 'status' => 'In review', 'note' => 'Connect the literature and strengthen every claim.'],
+            ['chapter' => 'Chapter 3', 'title' => 'Ready for defense.', 'status' => 'Approved', 'note' => 'Resolve feedback and present the final manuscript.'],
+        ];
+    @endphp
+
+    <div id="landing-react-root" data-scenes='@json($flipbookPages)' aria-label="Interactive CAST manuscript"></div>
+
+    <button type="button" class="landing-flipbook-next" data-flipbook-next aria-label="Turn to the next manuscript page">
+        <span data-flipbook-label aria-live="polite">Chapter 1</span>
+        <i aria-hidden="true">→</i>
+    </button>
     <div class="pointer-events-none landing-vignette"></div>
     <div class="pointer-events-none landing-grain"></div>
     <div class="landing-progress pointer-events-none" aria-hidden="true"><span class="landing-progress-fill"></span></div>
